@@ -1,0 +1,118 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Soustava rovnic I</h1>
+
+<p>Úkolem je realizovat program, který dokáže řešit soustavy lineárních 
+rovnic pro omezený počet proměnných.</p>
+
+<p>Program očekává data na standardním vstupu. Nejprve je zadán počet
+neznámých <tt>n</tt> (= počet rovnic). Následuje <tt>n</tt> x <tt>n+1</tt> 
+desetinných čísel. Tato čísla reprezentují hodnoty z matice soustavy, čtené 
+po řádcích.  Vždy <tt>n</tt> čísel představuje koeficienty u proměnných v 
+zadávané rovnici a <tt>n+1</tt> číslo pak hodnotu pravé strany. Následuje 
+zadání dalších řádek matice stejným způsobem.</p>
+
+<p>Výstup programu je vypočtené řešení soustavy rovnic. Pokud soustava 
+nemá řešení nebo má nekonečně mnoho řešení, pak program odpoví jedním 
+řádkem podle ukázky níže. Pokud má soustava právě jedno řešení, pak 
+program toto řešení zobrazí, pro každou neznámou na jednom řádku podle 
+ukázky níže. V každém případě je za posledním řádkem výpisu odřádkování 
+(\n).</p>
+
+<p>Program detekuje chybu v následujících situacích:</p>
+<ul>
+ <li>zadaný počet neznámých není celé číslo nebo má nesmyslnou hodnotu
+(záporné, nula),</li>
+ <li>počet rovnic je větší než 20 (pro jednoduchost je počet takto
+omezen),</li>
+ <li>nebyl zadán potřebný počet koeficientů matice soustavy nebo koeficienty
+nebyly zadané jako platná desetinná čísla.</li>
+</ul>
+
+<p>V případě chyby ji program detekuje, vypíše chybové hlášení (formát viz
+níže) a ukončí se. Za chybovým hlášením je odřádkování (\n). Chyba je
+detekována okamžitě, tedy např. pokud byl zadán nesprávně počet neznámých, 
+program se již nedotazuje na koeficienty matice soustavy.</p>
+
+<p>Spouštění programu probíhá v omezeném prostředí, kde je k dispozici
+pouze omezená velikost paměti (stačí pro uložení matice v binární podobě) a 
+kde je limitována  dobou běhu (rozsah vstupních dat je volen tak, aby 
+kubický algoritmus řešení soustavy vyhověl).</p>
+
+<b>Ukázka práce programu:</b><br>
+<hr>
+<pre>Zadejte pocet promennych:
+3
+Zadejte 12 prvku matice:
+1 2 3 5
+4 5 6 8
+7 8 10 11
+Jedno reseni:
+x1 = -3.000000
+x2 = 4.000000
+x3 = 0.000000
+</pre>
+<hr>
+<pre>Zadejte pocet promennych:
+3
+Zadejte 12 prvku matice:
+1 2 3 5
+4 5 6 8
+7 8 9 11
+Existuje nekonecne mnoho reseni.
+</pre>
+<hr>
+<pre>Zadejte pocet promennych:
+3
+Zadejte 12 prvku matice:
+1 2 3 5
+4 5 6 8
+7 8 9 21
+Soustava nema reseni.
+</pre>
+<hr>
+<pre>Zadejte pocet promennych:
+5
+Zadejte 30 prvku matice:
+1 2 3 4 5 6
+9 8 7 6 5 4
+1 6 4 6 3 8
+9 8 2 5 3 1
+8 5 3 1 4 0
+Jedno reseni:
+x1 = -0.973684
+x2 = 0.736842
+x3 = 0.242105
+x4 = 0.200000
+x5 = 0.794737
+</pre>
+<hr>
+<pre>Zadejte pocet promennych:
+3
+Zadejte 12 prvku matice:
+1 2 4 8
+3 4 8 9
+5 6 8 abc
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte pocet promennych:
+aa
+Nespravny vstup.
+</pre>
+<hr>
+
+<b>Nápověda:</b><br>
+
+<ul>
+ <li>Pro řešení soustavy použijte Gaussovu eliminační metodu.</li>
+ <li>Výsledky zobrazte v implicitní přesnosti (%f). Porovnávání 
+ výsledků toleruje drobné odchylky v řádu jednoho promile hodnoty.</li>
+</ul>
+
+</body>
+</html>

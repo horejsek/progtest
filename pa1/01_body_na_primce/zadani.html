@@ -1,0 +1,124 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Body na přímce</h1>
+
+<p>Úkolem je realizovat program, který pro trojici zadaných bodů ve 2D rovině
+rozhodne, zda leží na společné přímce.</p>
+
+<p>Vstupem programu jsou X a Y souřadnice trojice bodů ve 2D rovině.
+Souřadnice jsou zadané jako dvě celá čísla, prvé číslo reprezentuje
+souřadnici X a druhé číslo souřadnici Y.</p>
+
+<p>Program určí, zda zadané body leží na společné přímce nebo ne. Výsledek
+výpočtu zobrazí na standardní výstup. Formát výstupu je zřejmý z ukázek
+níže.</p>
+
+<p>Program musí kontrolovat správnost zadání vstupních dat. Pokud je na
+vstupu zadaná nesprávná hodnota (nečíselná), pak program detekuje chybu,
+zobrazí na standardním výstupu chybové hlášení podle ukázky a ukončí se.</p>
+
+<b>Ukázky práce programu:</b><br>
+<hr>
+<pre>Zadejte souradnice bodu A:
+1 2
+Zadejte souradnice bodu B:
+3 4
+Zadejte souradnice bodu C:
+5 6
+Body lezi na jedne primce.
+Prostredni je bod B.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu A:
+10 10
+Zadejte souradnice bodu B:
+0 10
+Zadejte souradnice bodu C:
+10 0
+Body nelezi na jedne primce.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu A:
+0 1
+Zadejte souradnice bodu B:
+0 3
+Zadejte souradnice bodu C:
+0 2
+Body lezi na jedne primce.
+Prostredni je bod C.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu A:
+1 0
+Zadejte souradnice bodu B:
+2 0
+Zadejte souradnice bodu C:
+-3 0
+Body lezi na jedne primce.
+Prostredni je bod A.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu A:
+1 1
+Zadejte souradnice bodu B:
+2 2
+Zadejte souradnice bodu C:
+1 1
+Body lezi na jedne primce.
+Nektere body splyvaji - zadny neni uprostred.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu A:
+10 20
+Zadejte souradnice bodu B:
+5 xyz
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu A:
+10 20
+Zadejte souradnice bodu B:
+5 6
+Zadejte souradnice bodu C:
+7.3 8
+Nespravny vstup.
+</pre>
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+<li>Při realizaci programu mějte na paměti, že program je testován 
+automatem. Automat kontroluje výstupy programu na shodu s referenčním
+výstupem. Shoda musí být zcela přesná, včetně formátů výzev programů,
+umístění mezer a podobně. Za každou řádkou výstupu realizovaného programu
+musí být odřádkování (právě jeden znak \n). Na odřádkování nezapomeňte 
+zejména na poslední řádce a za zobrazením případné chybové hlášky.</li>
+
+<li>Pro testování využijte přiložená vzorová data (českou variantu - adresář
+CZE v archivu). Doporučujeme přesměrovat ukázková vstupní data na vstup
+Vašeho programu a přesměrovaný výstup Vašeho programu porovnat s dodanými
+ukázkami výstupu. Podrobněji je postup popsaný v FAQ Progtestu.</li>
+
+<li>Odevzdávejte zdrojový kód (soubor .c nebo .cpp). Nemá cenu odevzdávat
+přeložený program (např. .exe) - bude odmítnut.</li>
+
+<li>V odevzdaném zdrojovém  kódu nepoužívejte funkci <tt>system ()</tt> - 
+pokud bude použita, bude odevzdané řešení odmítnuto z důvodu použití 
+"nedovolených funkcí". Pokud chcete zabránit zavření okna na konci běhu 
+Vašeho programu, pak funkci system uzavřete do bloku podmíněného překladu 
+podle ukázky:
+<pre>#ifndef __PROGTEST__
+system ("pause");
+#endif /* __PROGTEST__ */
+</pre>
+</li>
+
+<li>Při řešení se snažte omezit celkový počet podmínek. S výhodou lze využít 
+vektorové algebry.</li>
+</ul>
+
+</body>
+</html>

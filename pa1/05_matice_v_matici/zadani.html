@@ -1,0 +1,143 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Matice v matici</h1>
+
+<p>Úkolem je realizovat program, který bude hledat výskyty zadané matice 
+v druhé zadané matici. Program vypíše, kolikrát se mu podařilo matici najít.</p>
+
+<p>Vstupem programu jsou hledaná matice (co se hledá) a prohledávaná matice 
+(kde se hledá). Pro hledanou matici je zadaná výška (počet řádek) a následuje
+jej tento počet řádek textu (co řádek textu, to jeden řádek matice). Obsahem 
+řádku mohou být pouze znaky 0 až 9, každý znak reprezentuje jeden prvek matice.
+</p>
+
+<p>Po zadání hledané matice je obdobně zadaná prohledávaná matice. Výška 
+prohledávané matice není zadaná přímo, program musí poznat ukončení jejího 
+zadávání podle signalizovaného konce souboru (feof (stdin)).</p>
+
+<p>Výstupem programu je informace o počtu výskytů hledané matice v zadané 
+prohledávané matici. Formát výstupu je zřejmý z ukázek níže.</p>
+
+<p>Program musí být odolný proti zadání nesprávných vstupních dat. Pokud jsou
+zadaná neplatná vstupní data, program je musí detekovat, zobrazit chybové hlášení 
+a ukončit se. Chyby musí být detekovány (a program musí reagovat) okamžitě jakmile 
+lze chybu zjistit. Za chybu je považováno:</p>
+<ul>
+ <li>zadání nesmyslného počtu řádek hledané matice (záporné číslo),</li>
+ <li>zadání obsahu matice, který je tvořen jinými znaky než 0 až 9,</li>
+ <li>zadání řádku matice, který se svoji délkou liší od délky ostatních 
+řádek matice.</li>
+</ul>
+
+<p>Program je testován v omezeném prostředí. Je omezena jak doba běhu tak i 
+velikost dostupné paměti. Podmínky jsou nastavené tak, aby správně 
+implementované naivní řešení stihlo výpočet v časovém a paměťovém limitu.
+Pokud chcete získat body za bonusový test, musí být řešení optimalizováno -- 
+nenačítejte celý obsah prohledávané matice do paměti.</p>
+<b>Ukázka práce programu:</b><br>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+3
+Zadejte hledanou matici:
+123
+456
+789
+Matice, ktera bude prohledana:
+1231231234
+4564554567
+7817897892
+Matice nalezena 1 krat.
+</pre>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+3
+Zadejte hledanou matici:
+123
+456
+789
+Matice, ktera bude prohledana:
+1212331234
+4545654123
+7878997456
+3456845789
+Matice nalezena 2 krat.
+</pre>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+3
+Zadejte hledanou matici:
+121212
+212121
+121212
+Matice, ktera bude prohledana:
+12121212121212
+21212121212121
+12121212123212
+21212121212121
+12121212121212
+Matice nalezena 8 krat.
+</pre>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+3
+Zadejte hledanou matici:
+11
+11
+11
+Matice, ktera bude prohledana:
+1234567890
+1234567890
+1234567890
+1234567890
+Matice nalezena 0 krat.
+</pre>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+3
+Zadejte hledanou matici:
+2a
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+2
+Zadejte hledanou matici:
+123
+4567
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte pocet radek hledane matice:
+2
+Zadejte hledanou matici:
+123
+456
+Matice, ktera bude prohledana:
+12345
+678
+Nespravny vstup.
+</pre>
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+ <li>Po načtení výšky hledané matice budete muset odstranit jeden znak odřádkování.</li>
+ <li>Pro načítání prvků matice se hodí funkce <tt>fgetc</tt>.
+ </li><li>Velikost matice dopředu neznáte. Alokujte ji dynamicky, postupně ji zvětšujte:
+  <ul>
+   <li>začněte s dynamicky alokovaným polem velikosti např. 100 prvků (100 sloupců matice),</li>
+   <li>postupně pole vyplňujte,</li>
+   <li>pokud se pole zaplní, alokujte druhé (větší) pole. Velikost zvolte např. 1.5x větší. Do nového 
+    pole překopírujte původní obsah a pokračujte v načítání vstupu,
+   </li><li>po zkopírování nezapoměňte původní pole uvolnit.</li>
+  </ul></li>
+ <li>Můžete též využít funkci <tt>realloc()</tt>, která činnost z minulého bodu sdružuje.</li>
+ <li>Uvedený postup (postupné zvětšování) se dá použít nejen pro řádky pole, ale i pro
+   pole odkazů na řádky (pokud dopředu neznáte počet rádek).</li>
+</ul>
+
+</body>
+</html>

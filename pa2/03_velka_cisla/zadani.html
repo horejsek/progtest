@@ -1,0 +1,127 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Velká čísla</h1>
+
+<p>Úkolem je realizovat třídu <tt>CBigInt</tt>, která bude reprezentovat celá kladná čísla s 
+(téměř) neomezeným rozsahem.</p>
+
+<p>Celá čísla typu <tt>int</tt>, <tt>long long int</tt>, ... mají fixní velikost,
+tedy omezený rozsah. Pokud potřebujeme výpočty ve větším rozsahu hodnot, musíme si pro ně vytvořit vlastní
+datový typ. Třída implementující tento datový typ bude číslo ukládat ve vnitřní reprezentaci, kterou 
+bude podle potřeby natahovat (alokovat větší prostor). Vaším úkolem je takovou třídu realizovat. 
+Pro zjednodušení implementace jsou následující omezení:</p>
+
+<ul>
+ <li>Ukládáme pouze celá čísla (kladná a nulu). Záporná čísla nejsou implementovaná.</li>
+ <li>Z matematických operací implementujeme pouze sčítání a násobení.</li>
+</ul>
+
+
+<p>Realizovaná třída tedy musí splňovat následující rozhraní:</p>
+<dl>
+ <dt>konstruktor implicitní</dt><dd>inicializuje objekt, který bude reprezentovat hodnotu 0.</dd>
+ <dt>konstruktor s parametrem celého čísla <tt>unsigned int</tt></dt><dd>inicializuje objekt, 
+   reprezentující toto číslo.</dd>
+ <dt>konstruktor s parametrem řetězce (ASCIIZ)</dt><dd>inicializuje objekt s hodnotou, jejíž 
+   desítková reprezentace je v předávaném řetězci.</dd>
+ <dt>kopírující konstruktor</dt><dd>bude implementován, pokud to vnitřní struktury Vaší třídy vyžadují.</dd>
+ <dt>destruktor</dt><dd>bude implementován, pokud to vnitřní struktury Vaší třídy vyžadují.</dd>
+ <dt>přetížený operátor =</dt><dd>bude umožňovat přiřazení z celého čísla, řetězce a jiné instance 
+   <tt>CBigInt</tt>.</dd>
+ <dt>operátor &lt;&lt;</dt><dd>bude umožňovat výstup objektu do C++ streamu (desítková reprezentace, 
+   bez zbytečných úvodních nul).</dd>
+ <dt>operátor &gt;&gt;</dt><dd>bude umožňovat načtení ze vstupního streamu (vstup bude v desítkovém zápisu).</dd>
+ <dt>operátor +</dt><dd>umožní sečíst dvě čísla typu <tt>CBigInt</tt>, a dále <tt>CBigInt</tt> a celé číslo
+a <tt>CBigInt</tt> a ASCIIZ řetězec reprezentující celé číslo.</dd>
+ <dt>operátor +=</dt><dd>umožní k číslu <tt>CBigInt</tt> přičíst jiné číslo <tt>CBigInt</tt>, celé číslo nebo
+  číslo v podobě ASCIIZ řetězce.</dd>
+ <dt>operátor *</dt><dd>umožní vynásobit dvě čísla typu <tt>CBigInt</tt>, a dále <tt>CBigInt</tt> a celé číslo
+a <tt>CBigInt</tt> a ASCIIZ řetězec reprezentující celé číslo.</dd>
+ <dt>operátor *=</dt><dd>umožní číslo typu <tt>CBigInt</tt> přenásobit jiným číslem <tt>CBigInt</tt>, celým číslem
+  nebo  číslem v podobě ASCIIZ řetězce.</dd>
+</dl>
+
+<p>Odevzdávejte zdrojový soubor, který obsahuje Vaší implementaci třídy <tt>CBigInt</tt>. V odevzdávaném souboru
+nenechávejte vkládání hlavičkových souborů, Vaše testovací funkce a funkci <tt>main</tt>. Pokud v souboru 
+chcete ponechat <tt>main</tt> nebo vkládání hlavičkových souborů, vložte je do bloku podmíněného překladu. 
+</p>
+
+<p>V tomto příkladu není poskytnutý předpis pro požadované rozhraní třídy. Z textového popisu, ukázky použití 
+níže a znalostí přetěžování operátorů byste měli být schopni toto rozhraní vymyslet.</p>
+
+
+<b>Ukázka použití třídy:</b><br>
+
+<pre>CBigInt       a, b;
+istringstream is;
+a = 10;
+a += 20;  // a = 30 
+a *= 5;  // a = 150 
+cout &lt;&lt; a;  // 150
+b = 3 + a;  // b = 153 
+b = a * 7;  // b = 1050 
+cout &lt;&lt; a;  // 150
+
+a = "12345678901234567890";
+a += "99999999999999999999";  // a = 112345678901234567889 
+a *= "54321987654321987654";  // a = 6102840582289286403810728658624282842406 
+cout &lt;&lt; a;  // 6102840582289286403810728658624282842406
+a *= 0;  // a = 0 
+cout &lt;&lt; a;  // 0
+a = 10;
+b = a + "400";  // b = 410 
+b = a * "15";  // b = 150 
+cout &lt;&lt; a;  // 10
+
+is . clear ();
+is . str ( " 1234" );
+is &gt;&gt; b; // b = 1234, is . fail() = 0
+is . clear ();
+is . str ( " 12 34" );
+is &gt;&gt; b; // b = 12, is . fail() = 0
+is . clear ();
+is . str ( "999z" );
+is &gt;&gt; b; // b = 999, is . fail() = 0
+is . clear ();
+is . str ( "abcd" );
+is &gt;&gt; b; // b = 999, is . fail() = 1
+
+</pre>
+
+<hr>
+<b>Nápověda</b><br>
+<ul>
+ <li>Testovací prostředí kontroluje hodnoty ve Vašich objektech tím, že si je zašle do výstupního proudu 
+  a kontroluje jejich textovou podobu. Dokud Vám nebude správně fungovat výstup, budou všechny testy negativní.</li>
+ <li>Operátor pro výstup implementujte správně -- neposílejte data na <tt>cout</tt>, posílejte je do předaného 
+  výstupního proudu. Za výstupem čísla do proudu nepřidávejte odřádkování ani jiné bílé znaky.</li>
+ <li>Pokud Vám program nejde zkompilovat, ujistěte se, že máte správně přetížené operátory. Zejména si 
+  zkontrolujte kvalifikátory <tt>const</tt>.</li>
+ <li>V jednoduché variantě lze velká čísla reprezentovat uvnitř třídy jako řetězec jejich desítkové
+  hodnoty. Sčítání a násobení lze provádět tak, jak jsme se jej učili na základní škole. Tento postup není 
+  moc rychlý, ale správně implementované řešení na tomto principu vyhoví všem testům kromě bonusového 
+  testu rychlosti.</li>
+ <li>Bonusový test (rychlost) vyžaduje rychlé násobení. Test spočívá ve výpočtu faktoriálů velkých čísel 
+  (např. 5000!). Desítková reprezentace z minulého bodu není vhodná. Lepší výsledky dává binární 
+  reprezentace.</li>
+ <li>Načítání ze streamu musí správně manipulovat s příznakem chyby (fail bit). Chování <tt>CBigInt</tt> 
+  má být stejné jako chování pro celá čísla (čtou se desítkové cifry dokud to lze, úvodní bílé znaky se 
+  přeskakují, pokud je načtena alespoň jedna cifra, čtení uspěje). Pokud je na vstupu nečíselná hodnota 
+  (nelze načíst ani jednu cifru), musíte nastavit fail bit a nechat v proměnné její nezměněnou původní 
+  hodnotu (viz ukázka, hodnota 999). Pro nastavení příznaku chyby se hodí <tt>is . setstate (ios::failbit)</tt>. 
+  Dále, pro načtení jednoho znaku dopředu bez jeho faktického odstranění ze streamu se hodí metoda 
+  <tt>is . peek()</tt>.</li>
+ <li>Pokud se v operandu objeví celé číslo reprezentované jako ASCIIZ řetězec (např. operand pro +, +=, *, *=, =, ...),
+  je v testovacím prostředí garantováno, že se skutečně jedná o platný zápis desítkového čísla (obsahuje 
+  pouze znaky 0 až 9). Pokud chcete mít implementaci zcela robustní, můžete při detekci chyby formátu vyhodit 
+  výjimku. Ale tato vlastnost nebude (vzhledem k platným vstupům) testovaná.</li>
+ <li>Použití třídy předpokládá pouze 4 operátory, ale přetížené pro mnoho datových typů. Navrhněte rozhraní tak, 
+  abyste neměli zbytečně dlouhou implementaci. Využijte vlastností C++ (konstruktor uživ. konverze, implicitní parametry).</li>
+</ul>
+
+</body>
+</html>

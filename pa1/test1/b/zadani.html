@@ -1,0 +1,96 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Test VIIIb</h1>
+
+<p>Úkolem je realizovat funkci (ne celý program, pouze funkci), která dokáže  
+vyhledat v zadané čtvercové 2D matici celých čísel diagonálu s největším
+součtem. Přitom prohledává pouze diagonály rovnoběžné s hlavní diagonálou
+(nevyhodnocuje součet diagonály vedlejší a diagonál rovnoběžných s vedlejší
+diagonálou).</p>
+
+<p>Požadovaná funkce má rozhraní:</p>
+<pre>int maxDiagonal ( int ** mat, int size, int * maxSum );
+</pre>
+
+<ul>
+ <li><tt>mat</tt> je prohledávaná matice, předaná volajícím. Funkce může hodnoty v
+     této matici číst, nesmí je modifikovat.</li>
+ <li><tt>size</tt> je počet řádek a zároveň i sloupců v matici (matice je čtvercová).</li>
+ <li><tt>maxSum</tt> je výstupní parametr, ve kterém funkce předá volajícímu
+      nalezený maximální součet hodnot prvků na diagonále.</li>
+ <li>Návratová hodnota signalizuje úspěch / neúspěch hledání. Funkce musí
+     vrátit hodnotu 1, pokud uspěje, hodnotu 0 pokud neuspěje. Za neúspěch
+     považujte pokud maximálního součtu dosáhne více než jedna diagonála v
+     matici. Pokud funkce uspěje, musí správně nastavit výstupní
+     parametr <tt>maxSum</tt>. Pokud neuspěje, nemusí (nemá) výstupní parametr
+     <tt>maxSum</tt> ovlivňovat.</li>
+</ul>
+
+<p>Odevzdávejte zdrojový kód, který obsahuje Vaši implementaci funkce
+<tt>maxDiagonal</tt>. Do odevzdávaného souboru samozřejmě patří ještě další Vaše funkce, které
+jsou z funkce <tt>maxDiagonal</tt> volané. Naopak, v odevzdávaném souboru nesmí být vkládání
+hlavičkových souborů a funkce <tt>main</tt> (pokud vkládání hlavičkových souborů a funkci
+main zabalíte do bloku podmíněného překladu, mohou zůstat). Za základ řešení použijte
+ukázku níže. Ukázku si zkopírujte a doplňte pouze implementaci požadované funkce (případně
+dalších Vašich funkcí) Pokud zachováte bloky podmíněného překladu, můžete takový soubor odevzdávat
+Progtestu.</p>
+
+<b>Ukázka použití funkce:</b><br>
+<pre>#ifndef __PROGTEST__
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#endif /* __PROGTEST__ */
+
+/* pripadne dalsi Vase pomocne funkce */
+
+int maxDiagonal ( int ** mat, int size, int * maxSum )
+{
+ /* implementace */
+}
+ 
+#ifndef __PROGTEST__
+int main ( int argc, char * argv [] )
+{
+  int ret, val;
+
+  int m0r0[4] = {   1,   2,   3,   4 };
+  int m0r1[4] = {   3,   6,   7,   8 };
+  int m0r2[4] = {   9,  10,  11,  12 };
+  int m0r3[4] = {  16,  15,  14,  13 };
+  int * m0[4] = { m0r0, m0r1, m0r2, m0r3 };
+
+  int m1r0[3] = {   0,   1,   5 };
+  int m1r1[3] = {  -2,   3,  10 };
+  int m1r2[3] = {  21,   0,  13 };
+  int * m1[3] = { m1r0, m1r1, m1r2 };
+
+  int m2r0[2] = {   1,   2 };
+  int m2r1[2] = {   3,   4 };
+  int * m2[2] = { m2r0, m2r1 };
+
+  int m3r0[1] = { 100 };
+  int * m3[1] = { m3r0 };
+
+  ret = maxDiagonal ( m0, 4, &amp;val );
+  printf ( "m0: ret = %d (ref: 1), val=%d (ref: 37)\n", ret, val );
+
+  ret = maxDiagonal ( m1, 3, &amp;val );
+  printf ( "m1: ret = %d (ref: 1), val=%d (ref: 32)\n", ret, val );
+
+  ret = maxDiagonal ( m2, 2, &amp;val );
+  printf ( "m2: ret = %d (ref: 0)\n", ret );
+
+  ret = maxDiagonal ( m3, 1, &amp;val );
+  printf ( "m3: ret = %d (ref: 1), val=%d (ref: 100)\n", ret, val );
+
+  return ( 0 );
+}
+#endif /* __PROGTEST__ */
+</pre>
+
+</body>
+</html>

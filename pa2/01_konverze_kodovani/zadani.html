@@ -1,0 +1,93 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Konverze kódování</h1>
+
+<p>Úkolem je vytvořit 2 funkce, které budou provádět konverzi obsahu zadaných souborů.</p>
+
+<p>Pro kódování národních znaků se dnes vyplatí používat pouze UNICODE. Kódování UNICODE
+je univerzální, standardizované a výrobci používané. Kódování UNICODE definuje číselné kódy
+pro jednotlivé znaky (kódové pozice). Například znak A má číselný kód 65, znak Ž (velké Z s háčkem)
+má číselný kód 381. UNICODE obsazuje (rezervuje) znaky a jejich číselné kódy od 0 do
+2<sup>20</sup> + 2<sup>16</sup>. Takto vysoké číselné hodnoty se ale samozřejmě nedají uložit
+do jednoho bajtu. Pro fyzické uložení kódů znaků se používají různé přepisy na bajty.
+Běžně používané jsou UTF-8 (UNIXové systémy, data přenášená po síti) a UTF-16 (Windows, Java).</p>
+
+<p>Vaším úkolem je realizovat funkce:</p>
+
+<pre>bool UTF8toUTF16 (const char * src, const char * dst );
+bool UTF16toUTF8 (const char * src, const char * dst );
+</pre>
+
+<p>Z názvu funkcí je zřejmé, že tyto funkce budou převádět obsahy z jednoho
+kódování do druhého. Parametrem obou funkcí jsou jména souborů, které mají funkce převést.
+Zdrojový soubor (<tt>src</tt>) je určen pouze je čtení, cílový soubor (<tt>dst</tt>) bude
+funkcí vytvořen (přepsán). Funkce vracejí hodnotu <tt>true</tt>, pokud se podaří konverzi
+provést, případně hodnotu <tt>false</tt>, pokud převod selže. Za chybu je považováno:</p>
+
+<ul>
+ <li>libovolná chyba při čtení/zápisu/vytváření souborů,</li>
+ <li>nesprávný obsah souboru (neodpovídá předpisu UTF-8/UTF-16),</li>
+ <li>dekódované hodnoty (kódové pozice znaků) nejsou v UNICODE platné:
+  <ul>
+   <li>znaky s kódem rovným nebo vyšším než 2<sup>20</sup> + 2<sup>16</sup> a</li>
+   <li>znaky spadající do tzv. surrogate pairs (<tt>0xd800 - 0xdfff</tt>).</li>
+   <li>Ostatní kódové pozice považujte za přípustné.</li>
+  </ul></li>
+</ul>
+
+<p>Odevzdávejte zdrojový soubor, který obsahuje implementaci výše uvedených funkcí a podpůrných
+funkcí, které potřebujete pro jejich implementaci. Odevzdávaný soubor nesmí obsahovat nic jiného,
+zejména ne vkládání hlavičkových souborů a funkci <tt>main</tt>. Pokud v souboru chcete ponechat
+(např. z důvodu testování) funkci <tt>main</tt> a hlavičkové soubory, uzavřete je do bloku podmíněného
+překladu:</p>
+
+
+<pre>#ifndef __PROGTEST__
+#include &lt;iostream&gt;
+// other header files
+using namespace std; 
+#endif /* __PROGTEST__ */
+
+// implementace pozadovanych funkci + Vase pomocne funkce
+
+#ifndef __PROGTEST__
+int main ( void )   
+ {
+   // testy
+  
+   return ( 0 );
+ }
+#endif /* __PROGTEST__ */
+</pre>
+
+
+<hr>
+
+<b>Nápověda:</b><br>
+<ul>
+ <li>Pro testování si vytvořte (vygenerujte) soubory se vstupními daty a nechte je Vaším programem převést.
+  Výsledek porovnejte s výsledkem, který vypočte program <tt>iconv</tt>. K tomuto zadání nejsou přiložené  
+  žádné ukázkové výsledky - pomocí <tt>iconv</tt> si je můžete vyrobit sami. Pokud program <tt>iconv</tt>  
+  nemáte, je k dispozici na fakultních počítačích Sunray.</li>
+ <li>Kódování <tt>UTF-16</tt> předpokládáme v Intel (little-endian) pořadí bajtů. Pro
+  testování pomocí <tt>iconv</tt> je odpovídající volba <tt>utf16le</tt>.
+ </li><li>Převáděné soubory obsahují pouze platná data. Neobsahují na začátku žádné indikátory jako jsou BOM
+  značky. Stejně tak se předpokládá, že vygenerovaný soubor bude obsahovat převedený obsah (bez 
+  přidaných BOM značek).</li>
+ <li>Kódování UTF-8 a UTF-16 jsou hezky popsaná na Wikipedii.</li>
+ <li>Při implementaci je zakázáno používat funkce z <tt>iconv.h</tt>. Případné použití těchto funkcí povede
+  k chybě při překladu.</li>
+ <li>Vámi implementovaný kodér UTF-8 musí (v souladu s doporučením) generovat nejkratší možný výsledek.
+   Např. znak 0 (nula) lze v UTF-8 kódovat jako sekvenci bajtů <tt>0x30</tt>, <tt>0xc0 0xb0</tt>, 
+   <tt>0xe0 0x80 0xb0</tt> nebo <tt>0xf0 0x80 0x80 0xb0</tt>. Váš kodér musí zvolit nejkratší možnou
+   variantu - zde <tt>0x30</tt> (1 bajt).</li>
+ <li>Je požadované řešení, které pracuje s celým rozsahem UNICODE, včetně kódových pozic nad 65535. Tedy při čtení 
+UTF-16 vstupu musíte správně dekódovat surrogate pairs.</li>
+</ul>
+
+</body>
+</html>

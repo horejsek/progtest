@@ -1,0 +1,204 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Generický seznam prvků</h1>
+
+<p>Úkolem je realizovat třídu <tt>CList</tt>, která bude generickou datovou strukturou - seznamem prvků zadaného typu (generický parametr). Třída bude umět provádět základní operace nad seznamem jako je vkládání, odebírání a dotazování. Vnitřně bude 
+třída realizována pomocí dvojsměrně zřetězeného spojového seznamu. </p>
+
+<p>Třída bude mít rozhraní podle deklarace níže:</p>
+
+<ul>
+ <li>Konstruktor bez parametrů inicializuje novou prázdnou instanci seznamu.</li>
+
+ <li>Kopírující konstruktor bude ve třídě realizovnán, pokud automaticky generovaný kopírující konstruktor nevyhoví pro správnou funkci kopírování.</li>
+
+ <li>Destruktor odstraní prostředky alokované instancí. Bude realizován, pokud autoaticky generovaný destruktor pro správnou funkci nevyhovuje.</li>
+
+ <li>Přetížený operátor = provede hlubokou kopii seznamu. Bude realizován, pokud automaticky generovaný operátor = nevyhovuje pro správnou funkci kopírování.</li>
+
+ <li>Metoda <tt>InsStart</tt> vloží nový prvek do seznamu na první pozici (před stávající první prvek). Úspěch operace 
+je signalizován vracením hodnoty <tt>true</tt> (k neúspěchu by nemělo dojít).</li>
+
+ <li>Metoda <tt>InsEnd</tt> vloží nový prvek na konec seznamu (za poslední stávající prvek). Úspěch operace 
+je signalizován vracením hodnoty <tt>true</tt> (k neúspěchu by nemělo dojít).</li>
+ 
+ <li>Metoda <tt>InsBefore</tt> vloží před stávající prvek seznamu na pozici <tt>pos</tt> nový prvek. Metoda vrací úspěch (<tt>true</tt>),
+pokud se vložení zdařilo a neúspěch (<tt>false</tt>), pokud se vložení nezdařilo. Neúspěchem operace skončí např. pokud je zadán index neexistujícího prvku. Indexy začínají od 0 (první prvek v seznamu má pozici 0).</li>
+
+ <li>Metoda <tt>InsAfter</tt> vloží za stávající prvek seznamu na pozici <tt>pos</tt> nový prvek. Metoda vrací úspěch (<tt>true</tt>),
+pokud se vložení zdařilo a neúspěch (<tt>false</tt>), pokud se vložení nezdařilo. Neúspěchem operace skončí např. pokud je zadán index neexistujícího prvku.</li>
+
+ <li>Metoda <tt>Delete</tt> smaže prvek seznamu na pozici <tt>pos</tt>. Po úspšném provedení operace 
+vrací hodnotu <tt>true</tt>, při neúspěchu (neexistující prvek) vrací <tt>false</tt>.</li>
+
+ <li>Metoda <tt>Read</tt> načte obsah z prvku seznamu na pozici <tt>pos</tt> a uloží jej do druhého (výstupního)
+ parametru. Za neúspěch považováno, pokud je požadované načtení neexistujícího prvku 
+(nesprávná hodnota <tt>pos</tt>). V takovém případě metoda vrací <tt>false</tt>. Úspěšné provedení operace 
+čtení je signalizováno návratovou hodnotou <tt>true</tt>.</li>
+
+<li>Metoda <tt>Size</tt> zjistí počet prvků v seznamu.</li>
+
+<li>Členská proměnná <tt>m_First</tt> označuje počátek spojového seznamu. Začneme-li prvkem z <tt>m_First</tt> a 
+postupujeme-li spojovým seznamem ve směru ukazatelů <tt>m_Next</tt>, pak projdeme celý spojový seznam od začátku do konce. 
+Poslední prvek spojového seznamu má ukazatel <tt>m_Next</tt> nastaven na hodnotu <tt>NULL</tt>. Pokud je spojový seznam prázdný, je 
+<tt>m_First</tt> nastaven na <tt>NULL</tt>.</li>
+
+<li>Členská proměnná <tt>m_Last</tt> označuje poslední prvek spojového seznamu. Začneme-li prvkem z <tt>m_Last</tt> a 
+postupujeme-li spojovým seznamem ve směru ukazatelů <tt>m_Prev</tt>, pak projdeme celý spojový seznam od konce do začátku.
+První prvek spojového seznamu má ukazatel <tt>m_Prev</tt> nastaven na hodnotu <tt>NULL</tt>. Pokud je spojový seznam prázdný, 
+je <tt>m_Last</tt> nastaven na <tt>NULL</tt>.</li>
+
+</ul>
+
+<p>Odevzdávejte soubor, který obsahuje pouze implementovanou třídu
+<tt>CList</tt>. Třída musí splňovat veřejné rozhraní podle ukázky -
+pokud Vámi odevzdané řešení nebude obsahovat popsané rozhraní, dojde 
+k chybě při kompilaci.  
+Do třídy si ale můžete doplnit další metody (veřejné nebo i privátní)
+a členské proměnné. Odevzdávaný soubor musí obsahovat jak deklaraci  
+třídy (popis rozhraní) tak i definice metod, konstruktoru a destruktoru.
+Je jedno, zda jsou metody implementované inline nebo odděleně. Odevzdávaný
+soubor nesmí kromě implementace třídy <tt>CList</tt> obsahovat nic      
+jiného, zejména ne funkci <tt>main</tt>. Pro usnadnění odevzdávání můžete 
+využít toho, že ProgTest definuje proměnnou preprocesoru <tt>__PROGTEST__</tt>.
+
+</p><p>Implementovaná třída nesmí používat datové struktury z STL (<tt>vector</tt>,
+<tt>list</tt>, ...). Jejich použití povede k chybě při kompilaci. Třída je 
+testovaná v omezeném prostředí, kde je limitovaná dostupná paměť (postačuje 
+pro uožení zadávaných dat a režii pro spojové seznamy) a je omezena dobou běhu.</p>
+
+<p>Pokud to vnitřní struktura třídy vyžaduje, musí třída implementovat
+destruktor, kopírující konstruktor a přetěžovat operátor =.</p>
+
+<p>O generickém parametru <tt>T</tt> víte, že se jedná o datový typ, který správně implementuje 
+operace kopírování a výmaz. Může se tedy jednat o primitivní datový typ (int, double, 
+...), nebo o třídu, která má správně implementovaný operátor =, destruktor a kopírující konstruktor.</p>
+
+<b>Požadované veřejné rozhraní třídy:</b><br>
+
+<pre>template &lt;class T&gt;
+class CList
+ {
+   public:
+                             CList            ( void );
+
+// pokud je potreba:
+//  kopirujici konstruktor
+//  destruktor
+//  operator =
+
+    int                      Size             ( void ) const;
+    bool                     InsBefore        ( int pos, const T &amp; x );
+    bool                     InsAfter         ( int pos, const T &amp; x );
+    bool                     InsStart         ( const T &amp; x );
+    bool                     InsEnd           ( const T &amp; x );
+    bool                     Read             ( int pos, T &amp; x ) const;
+    bool                     Delete           ( int pos );
+
+   protected:
+    struct TItem
+     {
+       TItem   * m_Next;
+       TItem   * m_Prev;
+       T         m_Val;
+     };
+
+    TItem      * m_First;
+    TItem      * m_Last;
+
+    // dalsi metody a clenske promenne potrebne pro Vasi implementaci
+ };
+</pre>
+
+<b>Ukázka použití třídy:</b><br>
+
+<pre>bool   status;
+int    tempInt;
+string tempStr;
+CList&lt;int&gt;  LI1;
+status = LI1 . InsEnd ( 3000 );
+// status = true, LI1 . Size () =&gt; 1
+// (3000)
+status = LI1 . InsEnd ( 5000 );
+// status = true, LI1 . Size () =&gt; 2
+// (3000, 5000)
+status = LI1 . InsEnd ( 1000 );
+// status = true, LI1 . Size () =&gt; 3
+// (3000, 5000, 1000)
+status = LI1 . Read  ( 0, tempInt );
+// status = true, tempInt=3000
+status = LI1 . Read  ( 1, tempInt );
+// status = true, tempInt=5000
+status = LI1 . Read  ( 2, tempInt );
+// status = true, tempInt=1000
+
+CList&lt;int&gt;  LI2;
+status = LI2 . InsStart ( 10 );
+// status = true, LI2 . Size () =&gt; 1
+// (10)
+status = LI2 . InsAfter ( 0, 20 );
+// status = true, LI2 . Size () =&gt; 2
+// (10, 20)
+status = LI2 . InsEnd ( 30 );
+// status = true, LI2 . Size () =&gt; 3
+// (10, 20, 30)
+status = LI2 . InsBefore ( 2, 40 );
+// status = true, LI2 . Size () =&gt; 4
+// (10, 20, 40, 30)
+status = LI2 . Read  ( 0, tempInt );
+// status = true, tempInt=10
+status = LI2 . Read  ( 1, tempInt );
+// status = true, tempInt=20 
+status = LI2 . Read  ( 2, tempInt );
+// status = true, tempInt=40
+status = LI2 . Read  ( 3, tempInt );
+// status = true, tempInt=30
+
+CList&lt;int&gt;  LI3;
+status = LI3 . InsEnd ( 10 );
+// status = true, LI3 . Size () =&gt; 1
+// (10)
+status = LI3 . InsEnd ( 20 );
+// status = true, LI3 . Size () =&gt; 2
+// (10, 20)
+status = LI3 . InsEnd ( 30 );
+// status = true, LI3 . Size () =&gt; 3
+// (10, 20, 30)
+status = LI3 . InsEnd ( 40 );
+// status = true, LI3 . Size () =&gt; 4
+// (10, 20, 30, 40)
+status = LI3 . Delete ( 2 );
+// status = true, LI3 . Size () =&gt; 3
+// (10, 20, 40)
+status = LI3 . InsBefore ( 2, 50 );
+// status = true, LI3 . Size () =&gt; 4
+// (10, 20, 50, 40)
+status = LI3 . Read  ( 3, tempInt );
+// status = true, tempInt=40
+status = LI3 . InsBefore ( 4, 60 );
+// status = false, LI3 . Size () =&gt; 4
+// (10, 20, 50, 40)
+status = LI3 . InsAfter ( 3, 70 );
+// status = true, LI3 . Size () =&gt; 5
+// (10, 20, 50, 40, 70)
+
+CList&lt;string&gt;  LS;
+status = LS . InsEnd ( "first" );
+// status = true, LS . Size () =&gt; 1
+// (first)
+status = LS . InsEnd ( "third" );
+// status = true, LS . Size () =&gt; 2
+// (first, third)
+status = LS . InsAfter ( 0, "second" );
+// status = true, LS . Size () =&gt; 3
+// (first, second, third)
+status = LS . Read  ( 2, tempStr );
+// status = true, tempStr="third"  
+</pre>
+
+</body>
+</html>

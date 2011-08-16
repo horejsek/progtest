@@ -1,0 +1,181 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Intervaly v kalendáři</h1>
+
+<p>Úkolem je realizovat program, který umožní počítat časové 
+vzdálenosti v kalendáři.</p>
+
+<p>Vstupem programu jsou dvě data, obě v podobě dne, měsíce a roku.</p>
+
+<p>Výstupem programu je počet dní, který uběhl mezi zadanými daty.</p>
+
+<p>Program musí správně reagovat na zadání neplatných údajů na svém vstupu.
+Pokud je zadán neplatný vstup, program vypíše chybové hlášení (přesný formát
+viz níže) a ukončí se. Program testuje správnost vstupů ihned jakmile je datum 
+načteno, tedy pokud je zadané neplatné již prvé datum, na druhé datum se 
+již neptá. Za nesprávný vstup je považováno:</p>
+<ul>
+ <li>zadání nečíselných hodnot na vstupu,</li>
+ <li>zadání neplatného data (data, které v kalendáři neexistuje),</li>
+ <li>zadání záporného nebo nulového roku (uvažujeme pouze kladné letopočty),</li>
+ <li>pokud datum konce (druhé datum) předchází prvé datum.</li>
+</ul>
+
+<p>Vlastní výpočet musí být navržen tak, aby respektoval platný kalendář. Pro 
+řešení uvažujeme kalendář tak, jak byl platný v českých zemích, tedy:
+</p><ul>
+ <li>do 6.1.1584 platil Juliánský kalendář,</li>
+ <li>od 17.1.1584 platil Gregoriánský kalendář, navíc v úloze pracujeme s úpravou podle J. Herschela,</li>
+ <li>dny 7.1.1584, 8.1.1584, ..., 16.1.1584 neexistovaly, byly 
+  vypuštěné při změně kalendáře z Juliánského na Gregoriánský.</li>
+</ul><p></p>
+
+<p>Juliánský kalendář (pojmenovaný podle Julia Gaia Caesara) má 12 měsíců s 
+počty dní, jak jsme zvyklí. Únor v Juliánském kalendáři má 28 dní, 29 dní má 
+v přestupné roky. Přestupný rok nastává v Juliánském kalendáři každé 4 roky, 
+v letopočty, které jsou dělitelné 4.</p>
+
+<p>Gregoriánský kalendář (pojmenovaný po papeži Řehoři XIII) je dnes běžně 
+používaný kalendář. Přestupný únor má 29 dní, nepřestupný 28. Přestupný rok 
+v Gregoriánském kalendáři je každé 4 roky. Výjimku ale tvoří roky dělitelné 
+100 (např. 1800, 1900), které přestupné <b>nejsou</b>. Dále, existuje výjimka 
+z této výjimky -- roky dělitelné 400 (tedy např. 1600, 2000, 2400, ...) naopak 
+přestupné jsou. Tedy, přestupné roky byly např. 1896, 1904, 1908, ..., 1996, 
+2000, 2004, 2008, ...</p>
+
+<p>Úprava podle J. Herschela (kterou v řešení uvažujeme) spočívá v tom, že každý 
+rok dělitelný 4000 <b>není</b> přestupný (přestože podle samotného Gregoriánského 
+kalendáře by přestupný být měl).</p>
+
+<p>Program je spouštěn v limitovaném prostředí, kde je omezen dobou běhu (1 sec) a 
+je omezen velikostí dostupné paměti. Pro běžné vstupy nebude ani s dobou výpočtu ani 
+s nároky na paměť žádný problém. Do testování je zařazen bonusový test s velkými 
+letopočty (roky v řádu miliard). Naivní řešení tento výpočet nezvládnou v časovém 
+limitu, nedostanou tedy tento bonus (ale uspějí v samotné úloze).</p>
+
+
+<b>Ukázka běhu programu:</b><br>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+1 1 2000
+Zadejte druhe datum - den mesic rok:
+1 10 2010
+Mezi 1.1.2000 a 1.10.2010 ubehlo 3926 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+1 1 1
+Zadejte druhe datum - den mesic rok:
+1 1 2000
+Mezi 1.1.1 a 1.1.2000 ubehlo 730121 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+28 2 1400
+Zadejte druhe datum - den mesic rok:
+1 3 1400
+Mezi 28.2.1400 a 1.3.1400 ubehlo 2 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+28 2 1700
+Zadejte druhe datum - den mesic rok:
+1 3 1700
+Mezi 28.2.1700 a 1.3.1700 ubehlo 1 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+28 2 2000
+Zadejte druhe datum - den mesic rok:
+1 3 2000
+Mezi 28.2.2000 a 1.3.2000 ubehlo 2 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+6 1 2000
+Zadejte druhe datum - den mesic rok:
+17 1 2000
+Mezi 6.1.2000 a 17.1.2000 ubehlo 11 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+6 1 1584
+Zadejte druhe datum - den mesic rok:
+17 1 1584
+Mezi 6.1.1584 a 17.1.1584 ubehlo 1 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+31 9 2000
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+1 1 2000
+Zadejte druhe datum - den mesic rok:
+1 1 1500
+Prve datum je vetsi nez datum druhe.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+2 2 2000
+Zadejte druhe datum - den mesic rok:
+2 2 2000
+Mezi 2.2.2000 a 2.2.2000 ubehlo 0 dni.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+29 2 1500
+Zadejte druhe datum - den mesic rok:
+29 2 1700
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte prvni datum - den mesic rok:
+29 2 1904
+Zadejte druhe datum - den mesic rok:
+29 2 1906
+Nespravny vstup.
+</pre>
+<hr>
+
+<b>Nápověda:</b><br>
+<ul>
+ <li>Úloha je zaměřená na podmínky a jejich zvládnutí. Kalendáře a jejich změna 
+     v sobě obsahují řadu výjimek, které je potřeba ošetřit. Navrhujte podmínky uvážlivě, 
+     je snadné se v nich ztratit.</li>
+
+ <li>Pokud chcete zvládnout i bonusový test (s obrovskými letopočty), budete muset počet 
+     uběhlých dní ukládat do proměnné typu <tt>long long int</tt>, rozsah samotného typu 
+     <tt>int</tt> nebude stačit. Pokud nemáte ambice bonusovým testem projít, postačuje 
+     pro všechny výpočty datový typ <tt>int</tt>. Datový typ <tt>long long int</tt> je i 
+     technicky obtížnější pro zobrazování:<br><br>
+
+<b>gcc + Linux/Solaris/UNIX (tedy i pro odevzdání na Progtest):</b>
+<pre> long long int test = 1000000; 
+
+ test *= test;
+ printf ( "%lld\n", test ); /* !! %lld */
+</pre>
+<b>Windows + MSVC verze 2005 a novější, mingw, Dev-cpp (pro ladění):</b> 
+<pre> long long int test = 1000000; 
+
+ test *= test;
+ printf ( "%I64d\n", test ); /* !! %I64d */
+</pre>
+<b>MSVC do verze 2005 (pro ladění):</b> 
+<pre> __int64 test = 1000000; /* !! __int64 */
+
+ test *= test;
+ printf ( "%I64d\n", test ); /* !! %I64d */
+</pre></li>
+
+ <li>Úlohu lze vyřešit bez použití cyklů.</li> 
+</ul>
+
+</body>
+</html>

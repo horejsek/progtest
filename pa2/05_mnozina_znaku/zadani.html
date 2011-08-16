@@ -1,0 +1,195 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Množina znaků</h1>
+
+<p>Úkolem je realizovat třídu <tt>CSetWChar</tt>, do které půjde ukládat
+hodnotu UNICODE znaků v rozsahu 0 až 1023 včetně (pokrývá znaky založené
+na latince a řecké abecedě).</p>
+
+<p>Třída musí implementovat rozhraní podle deklarace níže. Rozhraní
+zahrnuje:</p>
+
+<ul>
+ <li>Implicitní konstruktor, který vytvoří prázdnou instanci (neobsahuje
+žádné prvky).</li>
+
+ <li>Kopírující konstruktor (pokud jej implementace vyžaduje).</li>
+
+ <li>Destruktor, který uvolní prostředky alokované instancí (pokud jej
+implementace vyžaduje).</li>
+
+ <li>Metodu <tt>Insert</tt>, která vloží prvek (UNICODE znak) do množiny.
+Metoda vrací hodnotu <tt>true</tt>, pokud prvek úspěšně vložila a hodnotu
+<tt>false</tt>, pokud vložení selhalo (prvek již byl obsažen, byl mimo meze).</li>
+
+ <li>Metodu <tt>Delete</tt>, která odebere prvek (UNICODE znak) z množiny.
+Metoda vrací hodnotu <tt>true</tt>, pokud prvek úspěšně odebrala a hodnotu
+<tt>false</tt>, pokud odebrání selhalo (prvek nebyl obsažen, hodnota mimo meze).</li>
+
+ <li>Metodu <tt>IsSet</tt>, která testuje, zda je prvek (UNICODE znak) v
+množině obsažen. Metoda vrací hodnotu <tt>true</tt>, pokud je prvek obsažen a
+hodnotu <tt>false</tt>, pokud ne nebo pokud je hodnota mimo meze.</li>
+ 
+ <li>Metoda <tt>Size</tt> vrací počet prvků v množině.</li>
+
+ <li>Metodu <tt>Intersect</tt>, která vypočte novou množinu obsahující
+průnik množiny, nad kterou byla metoda vyvolána a množiny z parametru.</li>
+
+ <li>Metodu <tt>Union</tt>, která vypočte novou množinu obsahující
+sjednocení množiny, nad kterou byla metoda vyvolána a množiny z parametru.</li>
+
+ <li>Metodu <tt>IsSubsetOf(X)</tt>, která určí, zda instance, nad kterou byla
+metoda vyvolána, je podmnožinou množiny <tt>X</tt>. Pokud ano (je podmnožinou),
+vrací <tt>true</tt>, v opačném případě <tt>false</tt>. Za pomnožinu považujeme
+i nevlastní podmnožinu.</li>
+
+ <li>Metodu <tt>HasSubset(X)</tt>, která určí, zda instance, nad kterou byla
+metoda vyvolána, je obsahuje množinu <tt>X</tt> jako svoji podmnožinu. Pokud
+ano (<tt>X</tt> je podmnožinou), vrací <tt>true</tt>, v opačném případě
+<tt>false</tt>. Za pomnožinu považujeme i nevlastní podmnožinu.</li>
+ <li>Metodu <tt>Equals(X)</tt>, která určí, zda instance, nad kterou byla
+metoda vyvolána, je obsahově shodná s  množinu <tt>X</tt>. Pokud ano, vrací
+<tt>true</tt>, v opačném případě <tt>false</tt>.</li>
+</ul>
+
+<p>Odevzdávejte soubor, který obsahuje pouze implementovanou třídu
+<tt>CSetWChar</tt>. Třída musí splňovat veřejné rozhraní podle ukázky -
+pokud Vámi odevzdané řešení nebude obsahovat popsané rozhraní, dojde   
+k chybě při kompilaci.  
+Do třídy si ale můžete doplnit další metody (veřejné nebo i privátní)
+a členské proměnné. Odevzdávaný soubor musí obsahovat jak deklaraci  
+třídy (popis rozhraní) tak i definice metod, konstruktoru a destruktoru.
+Je jedno, zda jsou metody implementované inline nebo odděleně. Odevzdávaný
+soubor nesmí kromě implementace třídy <tt>CSetWChar</tt> obsahovat nic    
+jiného, zejména ne funkci <tt>main</tt>. Pro usnadnění odevzdávání můžete 
+využít toho, že ProgTest definuje proměnnou preprocesoru <tt>__PROGTEST__</tt>.
+
+</p><p>Implementovaná třída nesmí používat datové struktury z STL (<tt>vector</tt>,
+<tt>list</tt>, ...). Jejich použití povede k chybě při kompilaci. Třída je 
+testovaná v omezeném prostředí, kde je limitovaná dostupná paměť 
+a je omezena dobou běhu (limity jsou vidět v hodnocení referenčního řešení). 
+Ve své implementaci byste se měli zaměřit na paměťovou efektivitu. Pokud
+Vaše řešení nebude paměťově efektivní, neprojde bonusovým testem.</p>
+
+
+<b>Požadované veřejné rozhraní třídy:</b><br>
+<pre>class CSetWChar
+ {
+   public:
+                   CSetWChar                               ( void );
+    bool           Insert                                  ( int X );
+    bool           Delete                                  ( int X );
+    bool           IsSet                                   ( int X ) const;
+    int            Size                                    ( void ) const;
+    // Kopirujici konstruktor, destruktor a pretizeny operator =, pokud   
+    // to implementace vyzaduje.
+   
+   
+    CSetWChar      Intersect                               ( const CSetWChar &amp; x ) const;
+    CSetWChar      Union                                   ( const CSetWChar &amp; x ) const;
+    bool           Equals                                  ( const CSetWChar &amp; x ) const;
+    bool           IsSubsetOf                              ( const CSetWChar &amp; x ) const;
+    bool           HasSubset                               ( const CSetWChar &amp; x ) const;
+    // dalsi metody/clenske promenne, ktere trida potrebuje pro implementaci  
+ };
+</pre>
+
+<b>Ukázka použití třídy:</b><br>
+
+<pre>bool status;
+CSetWChar S1;
+status = S1 . Insert ( 10 );
+// status = true, S1 . Size () =&gt; 1
+status = S1 . Insert ( 20 );
+// status = true, S1 . Size () =&gt; 2
+status = S1 . Insert ( 30 );
+// status = true, S1 . Size () =&gt; 3
+status = S1 . Insert ( 20 );
+// status = false, S1 . Size () =&gt; 3
+status = S1 . IsSet  ( 20 );
+// status = true
+status = S1 . Delete ( 20 );
+// status = true, S1 . Size () =&gt; 2
+status = S1 . IsSet  ( 20 );
+// status = false
+// S1 = {10, 30} 
+
+CSetWChar S2;
+status = S2 . Insert ( 10 );
+// status = true, S2 . Size () =&gt; 1
+status = S2 . Insert ( 30 );
+// status = true, S2 . Size () =&gt; 2
+status = S2 . Delete ( 20 );
+// status = false, S2 . Size () =&gt; 2
+// S2 = {10, 30}
+
+CSetWChar S3;
+status = S3 . Insert ( 10 );
+// status = true, S3 . Size () =&gt; 1
+status = S3 . Insert ( 30 );
+// status = true, S3 . Size () =&gt; 2
+status = S3 . Insert ( 50 );
+// status = true, S3 . Size () =&gt; 3
+// S3 = {10, 30, 50}
+
+S2 . Intersect ( S2 );
+// {10, 30}
+S2 . Union ( S2 );
+// {10, 30}
+status = S2 . IsSubsetOf ( S2 );
+// status = true
+status = S2 . HasSubset ( S2 );
+// status = true
+status = S2 . Equals ( S2 );
+// status = true
+
+S2 . Intersect ( S3 );
+// {10, 30}
+S2 . Union ( S3 );
+// {10, 30, 50}   
+status = S2 . IsSubsetOf ( S3 );
+// status = true
+status = S2 . HasSubset ( S3 );
+// status = false
+status = S2 . Equals ( S3 );
+// status = false
+
+S3 . Intersect ( S2 );
+// {10, 30}
+S3 . Union ( S2 );
+// {10, 30, 50}   
+status = S3 . IsSubsetOf ( S2 );
+// status = false
+status = S3 . HasSubset ( S2 );
+// status = true
+status = S3 . Equals ( S2 );
+// status = false
+
+S3 . Intersect ( S3 );
+// {10, 30, 50}
+S3 . Union ( S3 );
+// {10, 30, 50}   
+status = S3 . IsSubsetOf ( S3 );
+// status = true
+status = S3 . HasSubset ( S3 );
+// status = true
+status = S3 . Equals ( S3 );
+// status = true
+</pre>
+
+<b>Nápověda:</b><br>
+<ul>
+ <li>Navrhněte třídu tak, aby nevyžadovala dynamickou alokaci paměti pro své struktury
+(vzhledem k omezenému rozsahu vstupních dat je to snadné).</li>
+
+ <li>Pokud chcete získat bonus za paměťově efektivní řešení, musíte
+množinu uložit kompaktně. Jedna instance množiny by neměla celkem zabírat více než
+cca 250 bajtů.</li>
+</ul>
+
+</body>
+</html>

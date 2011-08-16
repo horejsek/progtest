@@ -1,0 +1,159 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Matematické hříčky</h1>
+
+<p>Úkolem je realizovat program, který dokáže řešit matematické hříčky -
+hraní si s čísly. Aby byl program stylový, bude si hrát se dvojkovými
+čísly.</p>
+
+<p>Vstupem programu jsou dvě celá desítková čísla. První udává požadovaný
+výsledek a druhé udává počet binárních cifer, který má program k dispozici.
+Program využije předepsaný počet binárních cifer (může svobodně volit mezi
+nulami a jedničkami), mezi které vloží podle vlastního uvážení operátory +,
+-, * a / tak, aby po provedení aritmetických operací získal předepsaný
+výsledek.</p>
+
+<p>Výstupem programu jsou nalezená řešení. Každé řešení je zobrazeno na
+samostatné řádce. Program musí zajistit, aby se žádné řešení ve výpisu
+neopakovalo. Na konci výpisu je přidána informace o celkovém počtu
+různých nalezených řešení.</p>
+
+<p>Program musí správně reagovat na chybný vstup. Pokud jsou zadané
+nesprávné údaje, program zobrazí chybové hlášení a ukončí se. Chyby jsou
+detekovány okamžitě po zadání vstupů. Za chyby je považováno:</p>
+<ul>
+ <li>zadání nečíselných hodnot,</li>
+ <li>zadání nulového nebo záporného počtu cifer.</li>
+</ul>
+
+<p>Program je spouštěn v limitovaném prostředí, je omezena doba běhu i
+velikost dostupné paměti. Základní algoritmus řešení (viz níže) postačuje na
+základní testy. Pro zvládnutí bonusového testu je potřeba algoritmus
+implementovat efektivně.</p>
+
+<b>Ukázka práce programu:</b><br>
+<hr>
+<pre> 
+Zadejte pozadovany vysledek:
+10
+Zadejte pocet cifer:
+5
+01010 bin = 10 dec
+0+1010 bin = 10 dec
+1001+1 bin = 10 dec
+1010+0 bin = 10 dec
+1010-0 bin = 10 dec
+1010*1 bin = 10 dec
+1010/1 bin = 10 dec
+1011-1 bin = 10 dec
+101*10 bin = 10 dec
+10*101 bin = 10 dec
+111+11 bin = 10 dec
+11+111 bin = 10 dec
+11*11+1 bin = 10 dec
+1+1001 bin = 10 dec 
+1+11*11 bin = 10 dec
+1*1010 bin = 10 dec 
+Celkem reseni: 16   
+</pre>
+<hr>
+<pre> 
+Zadejte pozadovany vysledek:
+-17
+Zadejte pocet cifer:
+6
+0-10001 bin = -17 dec
+1-10010 bin = -17 dec
+1-110*11 bin = -17 dec
+1-11*110 bin = -17 dec
+Celkem reseni: 4
+</pre>
+<hr>
+<pre> 
+Zadejte pozadovany vysledek:
+128
+Zadejte pocet cifer:
+4
+Celkem reseni: 0
+</pre>
+<hr>
+<pre> 
+Zadejte pozadovany vysledek:
+9
+Zadejte pocet cifer:
+6
+001001 bin = 9 dec
+0011*11 bin = 9 dec
+00+1001 bin = 9 dec
+00+11*11 bin = 9 dec
+01000+1 bin = 9 dec 
+01001+0 bin = 9 dec 
+...
+1*1+111+1 bin = 9 dec
+1*1+1+111 bin = 9 dec
+1*1*1001 bin = 9 dec 
+1*1*11*11 bin = 9 dec
+1/1+1000 bin = 9 dec 
+1/1+111+1 bin = 9 dec
+1/1+1+111 bin = 9 dec
+1/1*1001 bin = 9 dec 
+1/1*11*11 bin = 9 dec
+Celkem reseni: 314   
+</pre>
+<hr>
+<pre> 
+Zadejte pozadovany vysledek:
+0
+Zadejte pocet cifer:
+4
+0000 bin = 0 dec
+000+0 bin = 0 dec
+000-0 bin = 0 dec
+000*0 bin = 0 dec
+...
+1/1*0/1 bin = 0 dec
+1/1*1-1 bin = 0 dec
+1/1*1*0 bin = 0 dec
+1/1/1-1 bin = 0 dec
+1/1/1*0 bin = 0 dec
+Celkem reseni: 526 
+</pre>
+<hr>
+<pre> 
+Zadejte pozadovany vysledek:
+abc
+Nespravny vstup.
+</pre>
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+ <li>Pomocí rekurze vygenerujte všechny možné řetězce, které obsahují zadaný
+počet binárních cifer a (nějaké) operátory. Počet počet použitých operátorů 
+ve výrazu není předepsán, nicméně pro <tt>n</tt> platných cifer lze použít  
+nejméně 0 a nejvýše <tt>n-1</tt> operátorů.</li>
+
+ <li>Vygenerovaný výraz vyhodnoťte. Inspirujte se řešením úlohy z
+prosemináře.</li>
+
+ <li>Neuvažujte operátory unární plus/minus.</li>
+
+ <li>Úloha je řešena "hrubou silou". Výpočetní náročnost roste exponenciálně
+ s počtem dostupných cifer. Proto jsou při testování zadávané pouze malé
+počty cifer.</li>
+
+ <li>Pokud chcete uspět v bonusovém testu, musíte algoritmus implementovat
+efektivně. Negenerujte řetězce, které mají nesprávně vložené operátory
+(např. začínají operátorem). Vyhodnocení výrazu upravte tak, aby bylo 
+optimalizované pro dvojkovou soustavu. Odstraňte vyhodnocení závorek.</li>
+
+ <li>Výraz vyhodnotíte jako desetinné číslo. Při výpočtu (např. při dělení)
+mohlo dojít k zaokrouhlení. Za shodu považujte výsledek, který se od
+zadaného požadovaného výsledku liší o méně než 0.0001.</li>
+</ul>
+
+</body>
+</html>

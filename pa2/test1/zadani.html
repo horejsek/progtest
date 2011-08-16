@@ -1,0 +1,157 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Spojové seznamy XII</h1>
+
+<p>Úkolem je realizovat třídu <tt>CList</tt>, která bude implementovat
+seznam celých čísel.</p>
+
+<p>Třída bude mít rozhraní podle deklarace níže:</p>
+
+<ul>
+ <li>Konstruktor bez parametrů vytvoří prázdnou instanci třídy.</li>
+ <li>Metoda <tt>InsertStart</tt> přidá prvek na začátku seznamu.</li>
+ <li>Metoda <tt>InsertEnd</tt> přidá prvek na konci seznamu.</li>
+ <li>Metoda <tt>Merge</tt> spojuje (prokládá) dva spojové seznamy. Metoda je zavolaná
+  nad objektem - seznamem. Pokud tento objekt již měl nějaký obsah, metoda tento obsah
+  nejprve uvolní. Pak je objekt vyplněn hodnotami, které metoda střídavě kopíruje z prvého
+  a druhého parametru. Pokud jsou obsahy parametrů různé délky, je zbytek obsahu delšího
+  z parametrů zkopírován na konec bez prokládání. Parametry metody jsou označeny <tt>const</tt>,
+  metoda je tedy nesmí modifikovat.</li>
+
+ <li>Pretížený operátor <tt>&lt;&lt;</tt> zobrazí obsah seznamu na zadaný výstupní stream.
+  Formát výstupu je uveden v ukázce. (Čísla na výstupu jsou omezena hranatými závorkami, čísla
+  v seznamu jsou oddělena čárkami, za čárkou je jedna mezera. Mezi levou závorkou a prvním
+  číslem ani mezi posledním číslem a pravou závorkou mezera není. Před levou a za pravou hranatou
+  závorkou není vypisován žádný znak.)</li>
+ <li>Členská proměnná <tt>m_First</tt> ukazuje vždy na první prvek spojového
+  seznamu (nastavena na <tt>NULL</tt> pro prázdný seznam).</li>
+ <li>Členská proměnná <tt>m_Last</tt> ukazuje vždy na poslední prvek
+  spojového seznamu (nastavena na <tt>NULL</tt> pro prázdný seznam).</li>
+ <li>Členská proměnná <tt>Next</tt> v prvku <tt>TItem</tt> ukazuje na další prvek v seznamu.
+  Poslední prvek v seznamu musí mít <tt>Next</tt> nastaven na <tt>NULL</tt>.
+</li></ul>
+
+
+<p>K dispozici máte třídu <tt>CList</tt> a naimplementované metody
+<tt>InsertStart</tt>, <tt>InsertEnd</tt> a konstruktor. Vaším úkolem
+je naimplementovat správně přetížený operátor &lt;&lt; a metodu
+<tt>Merge</tt>.</p>
+
+<p>Odevzdávejte soubor, který obsahuje pouze implementovanou třídu
+<tt>CList</tt>. Třída musí splňovat veřejné rozhraní podle ukázky -
+pokud Vámi odevzdané řešení nebude obsahovat popsané rozhraní, dojde
+k chybě při kompilaci.
+Do třídy si ale můžete doplnit další metody (veřejné nebo i privátní)
+a členské proměnné. Odevzdávaný soubor musí obsahovat jak deklaraci
+třídy (popis rozhraní) tak i definice metod a konstruktoru.
+Je jedno, zda jsou metody implementované inline nebo odděleně. Odevzdávaný
+soubor nesmí kromě implementace třídy <tt>CList</tt> obsahovat nic
+jiného, zejména ne funkci <tt>main</tt>. Pro usnadnění odevzdávání můžete
+využít toho, že ProgTest definuje proměnnou preprocesoru
+<tt>__PROGTEST__</tt>.</p>
+
+<p>Implementovaná třída nesmí používat datové struktury z STL
+(<tt>vector</tt>, <tt>list</tt>, ...) a C++ datový typ <tt>string</tt>.
+Jejich použití povede k chybě při kompilaci.
+Třída je testovaná v omezeném prostředí, konkrétní omezení je zřejmé
+z hodnocení referenčního řešení.</p>
+
+<p>V realizované třídě se nemusíte zavývat implementací kopírujícího
+konstruktoru ani operátoru =. Progtest v této úloze netestuje jejich funkcionalitu.
+Pokud nezměníte deklaraci prvku seznamu (v této úloze pro to není důvod),
+nemusíte se zabývat ani implementací destruktoru (v testovacím prostředí
+je implementován).</p>
+
+<b>Požadované veřejné rozhraní třídy:</b><br>
+
+<pre>class CList
+ {
+   public:
+                                CList           ( void );
+     //  operator &lt;&lt; declaration
+     void                       InsertStart     ( int X );
+     void                       InsertEnd       ( int X );
+     void                       Merge           ( const CList &amp; L1, const CList &amp; L2 );
+   protected:
+     struct TItem
+      {
+        TItem                 * Next;
+        int                     Val;
+      };
+
+     TItem                    * m_First;
+     TItem                    * m_Last;
+ };
+
+CList::CList ( void )
+ {
+   m_First = NULL;
+   m_Last  = NULL;
+ }
+void CList::InsertStart ( int X )
+ {
+   TItem * n;
+
+   n          = new TItem;
+   n -&gt; Val   = X;
+   n -&gt; Next  = m_First;
+
+   m_First = n;
+
+   if ( ! m_Last )
+     m_Last = m_First;
+ }
+
+void CList::InsertEnd ( int X )
+ {
+   TItem * n;
+
+   n          = new TItem;
+   n -&gt; Val   = X;
+   n -&gt; Next  = NULL;
+
+   if ( m_Last )
+    {
+      m_Last -&gt; Next  = n;
+      m_Last          = n;
+    }
+   else
+     m_Last = m_First = n;
+ }
+</pre>
+
+<b>Ukázka použití třídy:</b><br>
+<pre>CList L0, L1, L2;
+cout &lt;&lt; L0 &lt;&lt; endl;
+ // []
+L0 . InsertEnd ( 33 );
+cout &lt;&lt; L0 &lt;&lt; endl;
+ // [33]
+L1 . InsertEnd ( 1 );
+L1 . InsertEnd ( 2 );
+L1 . InsertEnd ( 3 );
+L1 . InsertEnd ( 4 );
+L2 . InsertStart ( 60 );
+L2 . InsertStart ( 50 );
+L2 . InsertStart ( 40 );
+L2 . InsertStart ( 30 );
+L2 . InsertStart ( 20 );
+L2 . InsertStart ( 10 );
+cout &lt;&lt; L1 &lt;&lt; endl;
+ // [1, 2, 3, 4]
+cout &lt;&lt; L2 &lt;&lt; endl;
+ // [10, 20, 30, 40, 50, 60]
+L0 . Merge ( L1, L2 );
+cout &lt;&lt; L0 &lt;&lt; endl;
+ // [1, 10, 2, 20, 3, 30, 4, 40, 50, 60]
+L0 . InsertEnd ( 33 );
+cout &lt;&lt; L0 &lt;&lt; endl;
+ // [1, 10, 2, 20, 3, 30, 4, 40, 50, 60, 33]
+</pre>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Odhalování teroristů I.</h1>
+
+<p>Úkolem je vytvořit část programu, který umožní rychlou analýzu 
+záběrů z kamerového systému letiště. Implementace bude využívat 
+vlákna k tomu, aby na předložených snímcích vyhledala obrazy
+hledaných teroristů.</p>
+
+<p>Předpokládáme, že na letišti existuje kamerový systém, který 
+na požádání dodá aktuální snímek. Tomuto systému budeme říkat
+scanner. Dále předpokládáme, že existuje obrazová databáze hledaných
+teroristů. Pro jednoduchost předpokládáme, že databáze má nejvýše 32
+položek. Konečně, máme k dispozici rozhraní na zodpovědného bezpečnostního
+pracovníka (officer), kterému předáváme vyhodnocené snímky s informací, zda
+na nich jsou nějací z hledaných teroristů nebo ne.</p>
+
+<p>Vaším úkolem bude implementovat část programu, která bude žádat o snímky
+ze scanneru, ve získaném snímku bude vyhledávat hledané teroristy
+z databáze a o výsledcích hledání bude informovat příslušného pracovníka
+(officer). Naší snahou je zpracovávat co nejvíce snímků a co nejrychleji.
+Proto použijeme řešení s vlákny, které dokáže výpočetní zátěž rozložit
+na více procesorů/jader.</p>
+
+<p>Vaším úkolem je využít následující rozhraní a implementovat funkci <tt>TerroristHunter</tt>:</p>
+<pre>#ifndef __PROGTEST__
+typedef struct TImage
+ {  
+   int              m_W;   
+   int              m_H;   
+   unsigned char ** m_Data;
+ } TIMAGE;
+
+void  TerroristHunter    ( int        databaseSize,
+                           TIMAGE  ** database,
+                           int        threads,
+                           TIMAGE *(* scanner) ( void ),
+                           void    (* officer) ( TIMAGE *, int ) );
+#endif /* __PROGTEST__ */
+</pre>
+Význam deklarací je následující:
+<ul>
+ <li>Struktura <tt>TIMAGE</tt> reprezentuje jeden obrázek. Složka
+   <tt>m_W</tt> udává šířku a <tt>m_H</tt> výšku obrázku. Vlastní
+   obrazová data jsou předaná v podobě 2D pole <tt>m_Data</tt>. Toto
+   pole obsahuje <tt>m_H</tt> řádek a <tt>m_W</tt> sloupců, v každém
+   je uložena "barva" - odstín šedé od 0 do 254. Hodnota 255 má zvláštní
+   význam, viz níže.</li>
+ <li>Funkce <tt>TerroristHunter</tt> je rozhraní pro Vaší implementaci.
+  Tato funkce zajišťuje celý proces získávání/zpracování/odevzdávání   
+  obrazů. Má následující parametry:
+  <ul>
+   <li><tt>databaseSize</tt> udává počet hledaných teroristů v databázi.
+     Celkový počet je vždy maximálně 32.</li>
+   <li><tt>database</tt> je pole odkazů na obrázky hledaných teroristů.
+     Pole má vyplněno prvních <tt>databaseSize</tt> položek.</li>
+   <li><tt>threads</tt> je  počet pracovních vláken, která má Vaše
+     implementace vytvořit. Mezi tato vlákna se bude rozkládat výpočetní zátěž.</li>
+   <li><tt>scanner</tt> je ukazatel na funkci generující snímek. Vaše 
+     implementace bude tuto funkci volat vždy, když bude potřebovat další
+     snímek ke zpracování. Funkce vrátí ukazatel na načtený snímek nebo  
+     hodnotu <tt>NULL</tt>, pokud již další snímky nejsou k dispozici    
+     (konec směny).</li>
+   <li><tt>officer</tt> je ukazatel na funkci, které budete odevzdávat
+     zpracované a vyhodnocené snímky. Parametrem funkce je zpracovaný 
+     snímek (ukazatel na něj, tak jak jste jej obdrželi z funkce 
+     <tt>scanner</tt>) a pole příznaků, kteří teroristé byli na snímku
+     detekování. Druhý parametr (hodnotu <tt>int</tt>) chápejte jako bitové pole, kde každému
+     bitu odpovídá jeden terorista z databáze (bit 0 bude mít hodnotu 1 pokud 
+     obrázek obsahoval teroristu z <tt>database[0]</tt>, bit 1 bude mít hodnotu 1 pokud
+     obrázek obsahoval teroristu z <tt>database[1]</tt>, ...). Každý zpracovávaný obrázek 
+     předávejte touto funkcí pouze jednou, v okamžiku kdy již vyhodnotíte přítomnost/nepřítomnost 
+     všech hledaných teroristů z databáze.</li>
+  </ul></li>
+</ul>
+
+<p>Vaše implementace bude mít následující hrubou strukturu:</p>
+<ul>
+ <li>Inicializuje Vaše struktury (fronty), do kterých budete ukládat zpracovávané
+   požadavky.</li>
+ <li>Vytvoří <tt>threads</tt> vláken, každé z těchto vláken bude podle potřeby vyhledávat
+   teroristy z databáze ve zpracovávaných obrazech.</li>
+ <li>Vytvoří vlákno, které bude volat <tt>scanner</tt> a bude
+   rozdělovat práci mezi ostatní vlákna. Pro tuto činnost můžete vytvořit buď
+   samostatné nové vlákno, nebo můžete využít vlákno, které vyvolalo funkci <tt>TerroristHunter</tt>.</li>
+ <li>Vlákna zpracovávají příchozí požadavky, po vyhodnocení vracejí výsledky hledání 
+  (i výsledky negativní) rozhraním <tt>officer</tt>.</li>
+ <li>Po zpracování všech požadavků (scanner začne vracet NULL) ukončíte vytvořená vlákna, uvolníte Vámi alokované 
+  prostředky a vrátíte se z volání <tt>TerroristHunter</tt>.</li>
+</ul>
+
+<p>Jak vyhledávat teroristy: na rozdíl od reálné situace uvažujeme řadu zjednodušení. Obrázky
+vyhledáváme na přesnou shodu (neuvažujeme zmenšení, zvětšení, natočení, intenzitu osvětlení  
+ani změnu vzhledu hledaných osob). Úloha je tedy variantou vyhledávání matice v matici.      
+Aby byla výpočetně náročnější (a aby více vyniklo paralení zpracování vlákny), předpokládáme, že
+obrázek teroristy v databázi má vymaskované pozadí. Hodnoty barvy 0-254 v obrázku teroristy se musí přesně shodovat 
+s hodnotou barvy v obrazu. Pokud má nějaký prvek v obrazu teroristy hodnotu 255, jedná se o pozadí,
+které neuvažujeme (tedy na prohledávaném obrazu v tomto místě může být cokoliv). Příklad je v přiloženém
+zdrojovém kódu. První obrázek (<tt>i0</tt>) obsahuje teroristy <tt>t0</tt> a <tt>t1</tt>. Druhý obrázek 
+(<tt>i1</tt>) obsahuje teroristu <tt>t1</tt> a třetí obrázek neobsahuje žádného.</p>
+
+<p>Odevzdávejte zdrojový kód s implementací požadované funkce <tt>TerroristHunter</tt> a s případnými dalšími 
+podpůrnými funkcemi, které Vaše implementace potřebuje. Deklarace struktury <tt>TIMAGE</tt> ponechte v bloku 
+podmíněného překladu. Za základ implementace můžete použít přiložený příklad použití (vzorová data). Do Vaší 
+implementace nevkládejte funkci <tt>main</tt> ani direktivy pro vkládání hlavičkových souborů. Funkci 
+<tt>main</tt> a hlavičkové soubory lze pomechat pouze v případě, že jsou zabalené v bloku podmíněného překladu 
+(viz přiložená vzorová data). Při implementaci nepoužívejte STL.</p>
+
+
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+ <li>Pokud je ze scanneru čteno celkem <tt>n</tt> obrázků a máme vyhledávat <tt>m</tt> teroristů,
+   pak je potřeba pro celkem <tt>m x n</tt> vyhledat teroristu v obrázku. Každé vyhledání může trvat 
+   různě douho (v závislosti na velikosti obrázků). Proto je vhodné přidělovat výpočetní problémy jemně. 
+   Umožněte výpočet každého z <tt>m x n</tt> vyhledání vláknem, které je právě volné. Zkuste problém 
+   převést na nějakou modelovou synchronizační úlohu.</li>
+
+ <li>Pokud je obrázek teroristy větší než obrázek z kamery, pak prohledání nemusíte provádět - terorista 
+   tam není (ale testovací prostředí takové vstupy nezadává).</li>
+
+ <li>Funkce <tt>TerroristHunter</tt> je volaná opakovaně, pro různé vstupy. Nespoléhejte se na inicializaci
+   globálních proměnných - při druhém a dalším zavolání budou mít globální proměné hodnotu jinou. Je rozumné
+   případné globální proměnné inicializovat na začátku funkce <tt>TerroristHunter</tt>.</li>
+
+ <li>Nepoužívejte mutexy a podmíněné proměnné inicializované pomocí <tt>PTHREAD_MUTEX_INITIALIZER</tt>,
+   důvod je stejný jako v minulém odstavci. Použijte raději <tt>pthread_mutex_init()</tt>.</li>
+
+ <li>Testovací prostředí samo o sobě nevytváří žádná vlákna, tedy funkce <tt>TerroristHunter</tt> sama o
+  sobě nemusí být reentrantní (může používat globální proměnné).</li>
+
+ <li>Obrázky, které dostanete (v databázi, načtené ze scanneru) alokovalo testovací prostředí. Testovací 
+   prostředí se také postará o jejich uvolnění (po dokončení práce, resp. po převzetí funkcí officer). 
+   Jejich uvolnění tedy není Vaší starostí. Musíte ovšem uvolňovat ty prostředky, které si alokujete 
+   Vy sami.</li>
+
+ <li>Vlastní vyhledávání obrázku v obrázku lze naprogramovat pomocí funkce (či lépe 2 funkcí), 
+   které mají dohromady cca 20 řádek kódu (včetně hlaviček a deklarací proměnných).</li>
+
+ <li>Pokud má obrázek teroristy velikost <tt>Wt x Ht</tt> a obrázek z kamery <tt>Wk x Hk</tt>, pak
+     obrázek teroristy musíte přiložit a porovnat celkově na <tt>(Wk - Wt + 1) x (Hk - Ht + 1)</tt>
+     místech. Neuvažujte situaci, že by část obrázku teroristy obsahující pouze pozadí byla mimo obrázek 
+     kamery.</li>
+ <li>Obrázky musíte načtat, zpracovávat a odevzdávat průběžně. Postup, kdy si všechny obrázky načtete do 
+     paměťových struktur a pak je začnete zpracovávat, nebude fungovat.</li>
+ <li>Volání <tt>officer</tt> je reentrantní, není potřeba je serializovat (obalovat mutexy). Naopak, 
+     vyhodnocené fotografie odevzdávejte přímo z výpočetních vláken, paralelně. Obrázky není nutné officerovi 
+     odevzdávat v pořadí, v jakém byly načtené. Naopak, je lepší obrázek odevzdat okamžitě jakmile vlákno zjistí,
+     že vyhodnocení všech teroristů je hotové.</li>
+</ul>
+
+<hr>
+<b>Co znamenají jednotlivé testy:</b><br>
+<dl>
+ <dt><b>Test zrychleni vypoctu</b></dt><dd>Testovací prostředí spouští Vaši
+funkci pro ta samá vstupní data s různým počtem vláken. Měří se čas běhu
+(wall i CPU). S rostoucím počtem vláken by měl wall time klesat, CPU time 
+mírně růst (vlákna mají možnost běžet na dalších CPU). Pokud wall time
+neklesne, nebo klesne málo (např. pro 2 vlákna by měl ideálně klesnout na 
+0.5, existuje určitá rezerva), test není splněn.</dd>
+
+ <dt><b>Test rozložení zátěže</b></dt><dd>Testovací prostředí předloží 
+Vašemu programu relativně hodně fotografií teroristů (např. 20) a pouze
+jeden  velký obrázek z kamery. Výpočetní výkon by se měl rozložit mezi
+vlákna (např. pro 4 vlákna by měl wall time být 1/4 sekvenčního času). Pokud 
+přiřazujete výpočty tak, že fotografie z kamery = 1 vlákno, testem neprojdete
+(ztráta 50% bodů).</dd>
+
+ <dt><b>Busy waiting - vypocetni thready</b></dt><dd>Do volání
+<tt>scanner</tt> testovací prostředí vkládá uspávání vlákna (např. na 100
+ms). Výpočetní vlákna tím nemají práci. Pokud výpočetní vklákna nejsou 
+synchronizovaná blokujícím způsobem, výrazně vzroste CPU time.</dd>
+
+ <dt><b>Busy waiting - scanner thread</b></dt><dd>Do volání <tt>officer</tt>
+je vložena pauza. Pokud je špatně blokováno vlákno scanneru, výrazně vzroste
+CPU time. (Tento scénář je zde méně pravděpodobný.)</dd>
+
+ <dt><b>Busy waiting - complex</b></dt><dt></dt><dd>Je kombinací dvou posledně
+jmenovaných testů.</dd>
+</dl>
+
+</body>
+</html>

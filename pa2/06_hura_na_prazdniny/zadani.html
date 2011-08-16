@@ -1,0 +1,134 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Hurá na prázdniny!</h1>
+
+<p>Blíží se doba prázdnin a po dvou semestrech programování na oblíbeném
+automatickém vyhodnocovacím systému je potřeba změna. Na prázdniny je
+potřeba se připravit a sbalit. Jako poslední domácí úlohu z programování
+proto realizujete program, který Vám s balením na dovolenou pomůže.</p>
+
+<p>Předpokládáme, že na dovolenou s sebou balíme do kufru následující 
+věci:</p>
+<ul>
+ <li><tt>CClothes</tt> - oblečení, hmotnost 500g/ks. Samozřejmě je potřeba mít 
+evidovaný i jeho stručný popis (řetězec).</li>
+ <li><tt>CShoes</tt> - boty, hmotnost 750g/ks.</li>
+ <li><tt>CKnife</tt> - nůž o hmotnosti 100g/ks. Poznamenáme si délku jeho čepele (v cm).</li>
+ <li><tt>CGPS</tt> - naprostá nezbytnost, hmotnost 250g/ks.</li>
+</ul>
+
+<p>Veškeré nezbytnosti si balíme do kufru <tt>CSuitcase</tt>. Kufr má
+obrovskou výhodu - vejde se do něj naprosto vše a jeho hmotnost je pouze
+2000g. Navíc v naší implementaci bude schopen poskytovat cenné výstupy 
+díky svému rozhraní:</p>
+<ul>
+ <li>Metodou <tt>Add</tt> půjde přidat libovolné vybavení výše.</li>
+ <li>Metodou <tt>Weight</tt> půjde zjistit hmotnost celého kufru (včetně
+ obsahu). Hmotnost vrátí jako celé číslo.</li>
+ <li>Metodou <tt>Danger</tt> nám kufr zjistí, zda se v něm nenachází
+ nebezpečná věc (to se hodí např. při kontrole na letišti). Za nebezpečnou
+ věc v naší implementaci považujeme nůž s čepelí delší než 7 cm. Pokud je v
+ kufru nebezpečná věc, metoda vrátí <tt>true</tt>.</li>
+ <li>Metodu <tt>Count</tt>, která nám zjistí počet věcí v kufru (vrací celé
+ číslo).</li>
+ <li>Operátor <tt>&lt;&lt;</tt>, kterým půjde zobrazit obsah celého kufru
+ (viz ukázka níže).</li>
+ <li>Dále od našeho kufru požadujeme standardní vlastnosti (aby se sám
+  dokázal správně zničit, aby se dokázal správně zkopírovat, ...).
+</li></ul>
+
+<p>Vaším úkolem je navrhnout vhodné rozhraní tříd <tt>CKnife</tt>,
+<tt>CGPS</tt>, <tt>CShoes</tt>, <tt>CClothes</tt> a <tt>CSuitcase</tt>. Při
+realizaci se zaměřte zejména na čistotu objektového návrhu. Implementace 
+vyžaduje, abyste využili dědění a polymorfismu a dále vyžaduje, abyste
+atributy (členské proměnné) umístili právě jen do těch tříd, které 
+je potřebují. Rozhodně nebude fungovat pokud všechny atributy umístíte do
+základní třídy.</p>
+
+<p>Odevzdávejte zdrojový soubor, který obsahuje implementaci všech
+požadovaných tříd. Do odevzdávaného souboru nepřidávejte vkládání
+hlavičkových souborů a funkci <tt>main</tt>. Pokud vkládání hlavičkových
+souborů nebo funkci <tt>main</tt> v odevzdávaném souboru necháte, umístěte
+je do bloku podmíněného překladu (<tt>#ifndef __PROGTEST__</tt> /
+<tt>#endif</tt>). Vlastní program je testován v omezeném prostředí,
+je omezena jednak velikost dostupné paměti a dále i doba běhu. Konkrétní
+hodnoty limitů jsou zřejmé z vyhodnocení referenčního řešení.</p>
+
+<b>Ukázka použití programu:</b><br>
+<pre>CSuitcase T0;
+T0 . Add ( CKnife ( 7 ) );
+T0 . Add ( CGPS () );
+T0 . Add ( CClothes ( "red T-shirt" ) );
+T0 . Add ( CShoes () );
+cout &lt;&lt; T0;
+/*-----------------
+Suitcase
++-Knife 7 cm
++-GPS
++-Clothes (red T-shirt)
+\-Shoes
+-------------------*/
+// T0 . Weight () = 3600, T0 . Count () = 5, T0 . Danger () = false
+
+CSuitcase T1;
+T1 . Add ( CKnife ( 5 ) );
+T1 . Add ( CClothes ( "red T-shirt" ) );
+T1 . Add ( CClothes ( "blue jeans" ) );
+T1 . Add ( CShoes () );
+cout &lt;&lt; T1;
+/*-----------------
+Suitcase
++-Knife 5 cm
++-Clothes (red T-shirt)
++-Clothes (blue jeans)
+\-Shoes
+-------------------*/
+// T1 . Weight () = 3850, T1 . Count () = 5, T1 . Danger () = false
+
+CSuitcase T2;
+T2 . Add ( CKnife ( 8 ) ) . Add ( CClothes ( "white underwear" ) ) . Add ( CShoes () );
+T2 . Add ( CClothes ( "red T-shirt" ) );
+T2 . Add ( CClothes ( "brown jacket" ) );
+T2 . Add ( CShoes () );
+cout &lt;&lt; T2;
+/*-----------------
+Suitcase
++-Knife 8 cm
++-Clothes (white underwear)
++-Shoes
++-Clothes (red T-shirt)
++-Clothes (brown jacket)
+\-Shoes
+-------------------*/
+// T2 . Weight () = 5100, T2 . Count () = 7, T2 . Danger () = true
+</pre>
+
+<hr>
+<b>Poznámky:</b><br>
+<ul>
+ <li>Výpisy v ukázce jsou umístěné do komentářů. První řádka komentáře
+(řádka pomlček) a poslední řádka komentáře (opět řádka pomlček) nejsou
+součástí výpisu. Výpis končí označením poslední věci v kufru a
+odřádkováním.</li>
+
+ <li>Prvním řádkem ve výpisu je označení kufru (<tt>Suitcase</tt>).</li>
+ <li>Poslední prvek ve výpisu nemá značku <tt>+-</tt>, ale značku
+  <tt>\-</tt>.
+ </li><li>Pořadí věcí ve výpisu je shodné jako pořadí vkládání pomocí metody
+  <tt>Add</tt>.</li> 
+ <li>Výstupy operátorů jsou porovnávány řetězcově, dodržte formátování
+  včetně bílých znaků.</li>
+ <li>Nepoužívejte <tt>typeid</tt> operátor. Pro vyřešení této úlohy není
+  potřeba (jeho použití zde svědčí o nesprávném návrhu). V testovacím
+  prostředí úmyslně není vložen hlavičkový soubor <tt>typeinfo</tt>, použití
+  <tt>typeid</tt> tedy povede k chybě při kompilaci.</li>
+ <li>Místo pracné kaskády <tt>if</tt>/<tt>if else</tt> použijte pro kopírování 
+  věcí v kufru polymorfismus.</li>
+</ul>
+
+</body>
+</html>

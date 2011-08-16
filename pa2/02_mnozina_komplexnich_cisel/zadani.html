@@ -1,0 +1,150 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Množina komplexních čísel</h1>
+
+<p>Úkolem je realizovat třídu <tt>CSetCplx</tt>, která bude implementovat množinu 
+komplexních čísel a rozhraní, které umožní základní množinové operace. Interně 
+bude množina realizovaná polem setříděných hodnot typu <tt>CComplex</tt>.</p>
+
+<p>Veřejné rozhraní množiny je popsáno níže. Obsahuje následující:</p>
+<ul>
+ <li>Konstruktor bez parametrů. Tento konstruktor inicializuje instanci třídy 
+      tak, že vzniklá instance je zatím prázdná (neobsahuje žádná čísla).</li>
+ <li>Destruktor. Uvolňuje prostředky, které instance alokovala.</li>
+ <li>Metoda <tt>Insert (CComplex X)</tt> přidá do existujícího objektu další prvek - 
+    komplexní číslo X. Metoda vrací hodnotu <tt>true</tt>, pokud byl do množiny prvek 
+    přidán, nebo hodnotu <tt>false</tt>, pokud prvek přidán nebyl (protože již v množině 
+    existoval).</li>
+ <li>Metoda <tt>Delete (CComplex X)</tt> odstraní prvek X z množiny. Pokud byl prvek 
+    odstraněn, vrátí metoda hodnotu <tt>true</tt>. Pokud prvek neodstraní (protože 
+    v množině nebyl obsažen), vrátí metoda hodnotu <tt>false</tt>.</li>
+ <li>Metoda <tt>IsSet (CComplex X)</tt> zjistí, zda je prvek X obsažen v množině. 
+     Vrací <tt>true</tt>, pokud ano, <tt>false</tt>, pokud ne.</li>
+ <li>Metoda <tt>Size</tt> zjistí počet prvků v množině.</li>
+</ul>
+
+<p>Odevzdávejte soubor, který obsahuje pouze implementovanou třídu <tt>CSetCplx</tt>. 
+Třída musí splňovat veřejné rozhraní podle ukázky - pokud Vámi odevzdané řešení nebude 
+obsahovat popsané rozhraní, dojde k chybě při kompilaci. Do třídy si ale můžete doplnit 
+další metody (veřejné nebo i privátní) a členské proměnné. Odevzdávaný soubor musí 
+obsahovat jak deklaraci třídy (popis rozhraní) tak i definice metod, konstruktoru a 
+destruktoru. Je jedno, zda jsou metody implementované inline nebo odděleně. Odevzdávaný 
+soubor nesmí kromě implementace třídy <tt>CSetCplx</tt> obsahovat nic jiného, zejména ne 
+funkci <tt>main</tt>. Pro usnadnění odevzdávání můžete využít toho, že ProgTest definuje 
+proměnnou preprocesoru <tt>__PROGTEST__</tt>.
+
+</p><p>Implementovaná třída nesmí používat datové struktury z STL (vector, list, ...). 
+Jejich použití povede k chybě při kompilaci. Třída je testovaná v omezeném prostředí, 
+kde je limitovaná dostupná paměť (dostačuje k uložení prvků množiny v binární podobě) 
+a je omezena dobou běhu.</p>
+
+<p>Implementovaná třída se nemusí zabývat kopírujícím konstruktorem ani přetěžováním 
+operátoru =. V této úloze ProgTest neprovádí testy této funkčnosti.</p>
+
+<p>Implementace třídy musí být efektivní z hlediska nároků na čas i nároků na paměť. 
+Jednoduché lineární řešení nestačí (pro testovací data vyžaduje čas cca 4 minuty). 
+Předpokládejte, že operace dotazu je cca 10x častější než vkládání a mazání. 
+Proto vyhovuje řešení s polem setříděných hodnot, kde vyhledávání probíhá binárním půlením 
+s logaritmickou složitostí. Méně časté operace vkládání a výmaz je pak doporučeno 
+implementovat postupem, který v logaritmickém čase najde pozici vkládaného/odebíraného 
+prvku a pak v lineárním čase posune obsah pole.</p>
+
+<p>Pro uložení hodnot alokujte pole dynamicky. Počáteční velikost volte malou 
+(např. tisíc prvků) a velikost zvětšujte/zmenšujte podle potřeby. Při zaplnění 
+pole není vhodné alokovat nové pole větší pouze o jednu hodnotu, takový postup 
+má obrovskou režii na kopírování obsahu. Je rozumné pole rozšiřovat s krokem 
+řádově tisíců prvků, nebo geometrickou řadou s kvocientem ~1.5 až 2.</p>
+
+<p>Požadované veřejné rozhraní třídy:</p>
+
+<pre>#ifndef __PROGTEST__
+//pripadne #include potrebne pro testovani
+#include &lt;iostream&gt;
+using namespace std;
+
+//ponechte tuto deklaraci v bloku pomineneho prekladu
+struct CComplex
+ {
+             CComplex ( void ) { }
+             CComplex ( int re, int im )
+              { m_Re = re; m_Im = im; }
+   int       m_Re;
+   int       m_Im;
+ };
+#endif /* __PROGTEST__ */
+
+class CSetCplx
+ {
+   public:
+                             CSetCplx                      ( void );
+                            ~CSetCplx                      ( void );
+    bool                     Insert                        ( CComplex X );
+    bool                     Delete                        ( CComplex X );
+    bool                     IsSet                         ( CComplex X ) const;
+    int                      Size                          ( void ) const; 
+
+   // dalsi metody a clenske promenne potrebne pro implementaci
+ };
+
+
+#ifndef __PROGTEST__
+// Vase funkce pro testovani, main, ...
+#endif /* __PROGTEST__ */
+</pre>
+
+<hr>
+
+<p>Ukázka použití třídy:</p>
+
+<pre>bool status;
+CSetCplx  S1;
+status = S1 . Insert ( CComplex ( 10, 20 ) );
+// status = true, S1 . Size () =&gt; 1
+status = S1 . Insert ( CComplex ( 20, 30 ) );
+// status = true, S1 . Size () =&gt; 2
+status = S1 . Insert ( CComplex ( 10, 30 ) );
+// status = true, S1 . Size () =&gt; 3
+status = S1 . IsSet  ( CComplex ( 20, 30 ) );
+// status = true
+status = S1 . IsSet  ( CComplex ( 10, 20 ) );
+// status = true
+status = S1 . IsSet  ( CComplex ( 10, 30 ) );
+// status = true
+status = S1 . Delete ( CComplex ( 10, 30 ) );
+// status = true, S1 . Size () =&gt; 2
+status = S1 . IsSet  ( CComplex ( 10, 30 ) );
+// status = false
+status = S1 . IsSet  ( CComplex ( 10, 20 ) );
+// status = true
+
+CSetCplx  S2;
+status = S2 . Insert ( CComplex ( 30, 50 ) );
+// status = true, S2 . Size () =&gt; 1
+status = S2 . IsSet  ( CComplex ( 30, 50 ) );
+// status = true
+status = S2 . Delete ( CComplex ( 30, 50 ) );
+// status = true, S2 . Size () =&gt; 0
+status = S2 . IsSet  ( CComplex ( 30, 50 ) );
+// status = false
+status = S2 . Delete ( CComplex ( 30, 50 ) );
+// status = false, S2 . Size () =&gt; 0
+status = S2 . Insert ( CComplex ( 30, 50 ) );
+// status = true, S2 . Size () =&gt; 1
+status = S2 . IsSet  ( CComplex ( 30, 50 ) );
+// status = true
+status = S2 . Insert ( CComplex ( 30, 50 ) );
+// status = false, S2 . Size () =&gt; 1
+status = S2 . IsSet  ( CComplex ( 30, 50 ) );
+// status = true
+status = S2 . Delete ( CComplex ( 30, 50 ) );
+// status = true, S2 . Size () =&gt; 0
+status = S2 . IsSet  ( CComplex ( 30, 50 ) );
+// status = false
+</pre>
+
+</body>
+</html>

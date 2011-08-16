@@ -1,0 +1,77 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Soustava rovnic II</h1>
+
+<p>Úlohou je rozšířit program pro řešení soustavy rovnic. Úlohu má cenu
+řešit až poté, co máte hotovou a odladěnou její jednodušší variantu.</p>
+
+<p>Rozšíření spočívá ve změně formátu vstupních dat. V rozšířené podobě 
+je na vstupu matice zadána bez explicitní informace o počtu neznámých.
+Velikost matice si program musí sám určit podle formátu dat na vstupu.
+Předpokládejte, že každá řádka vstupu bude reprezentovat jednu řádku 
+matice soustavy. Na řádce jsou tedy koeficienty a hodnota pravé strany rovnice.
+Je úkolem programu správně načíst vstup a zkontrolovat, že počet 
+sloupců koresponduje s počtem řádek.</p>
+
+<b>Ukázka práce programu:</b><br>
+<hr>
+<pre>Zadejte matici soustavy:
+1 2 3 5
+4 5 6 8
+7 8 10 11
+Jedno reseni:
+x1 = -3.000000
+x2 = 4.000000
+x3 = 0.000000
+</pre>
+<hr>
+<pre>Zadejte matici soustavy:
+1 2 3 5
+4 5 6 8
+7 8 9 11
+Existuje nekonecne mnoho reseni.
+</pre>
+<hr>
+<pre>Zadejte matici soustavy:
+1 2 3 5
+4 5 6 8
+7 8 9 21
+Soustava nema reseni.
+</pre>
+<hr>
+<pre>Zadejte matici soustavy:
+1 2 3 4 5 6
+9 8 7 6 5 4
+1 6 4 6 3 8
+9 8 2 5 3 1
+8 5 3 1 4 0
+Jedno reseni:
+x1 = -0.973684
+x2 = 0.736842
+x3 = 0.242105
+x4 = 0.200000
+x5 = 0.794737
+</pre>
+<hr>
+<pre>Zadejte matici soustavy:
+2 3 6
+4 7 aa
+Nespravny vstup.
+</pre>
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+ <li>Musíte kontrolovat konec řádky na vstupu. Případně číst vstup po
+řádcích. K tomu se hodí funkce <tt>fgets</tt>.</li>
+ <li>K rozebrání řádek (čísel na řádce) použijte funkci <tt>sscanf</tt>.
+Funkce pracuje stejně jako <tt>scanf</tt>, jen nečte data z klávesnice, ale
+z předloženého místa v paměti (dříve načteného pomocí <tt>fgets</tt>).</li>
+ <li>Při práci se <tt>sscanf</tt> se Vám může hodit konverze %n.
+</li></ul>
+
+</body>
+</html>

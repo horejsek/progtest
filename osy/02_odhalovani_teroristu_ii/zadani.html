@@ -1,0 +1,250 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Odhalování teroristů II.</h1>
+
+<p>Úkolem je vytvořit část programu, který umožní rychlou analýzu 
+záběrů z kamerového systému letiště. Implementace bude využívat 
+procesy k tomu, aby na předložených snímcích vyhledala obrazy
+hledaných teroristů. Úloha je podobná úloze na vlákna. Liší se 
+ale v technických detailech (sdílená paměť, ...). Přečtěte si 
+důkladně tyto poznámky v odstavci Nápověda.</p>
+
+<p>Předpokládáme, že na letišti existuje kamerový systém, který 
+na požádání dodá aktuální snímek. Tomuto systému budeme říkat
+scanner. Dále předpokládáme, že existuje obrazová databáze hledaných
+teroristů. Pro jednoduchost předpokládáme, že databáze má nejvýše 32
+položek. Konečně, máme k dispozici rozhraní na zodpovědného bezpečnostního
+pracovníka (officer), kterému předáváme vyhodnocené snímky s informací, zda
+na nich jsou nějací z hledaných teroristů nebo ne.</p>
+
+<p>Vaším úkolem bude implementovat část programu, která bude žádat o snímky
+ze scanneru, ve získaném snímku bude vyhledávat hledané teroristy
+z databáze a o výsledcích hledání bude informovat příslušného pracovníka
+(officer). Naší snahou je zpracovávat co nejvíce snímků a co nejrychleji.
+Proto použijeme řešení s paralelně běžícími procesy, které dokáže výpočetní 
+zátěž rozložit na více procesorů/jader.</p>
+
+<p>Vaším úkolem je využít následující rozhraní a implementovat funkci 
+<tt>TerroristHunter</tt>:</p>
+<pre>#ifndef __PROGTEST__
+
+#define TERRORIST_SIZE  100
+#define IMAGE_SIZE      400
+
+typedef struct TTerrorist
+ {
+   int              m_W;
+   int              m_H;
+   unsigned char    m_Data[TERRORIST_SIZE][TERRORIST_SIZE];
+ } TTERRORIST;
+
+typedef struct TImage
+ {
+   int              m_W;
+   int              m_H;
+   unsigned char    m_Data[IMAGE_SIZE][IMAGE_SIZE];
+ } TIMAGE;
+
+void  TerroristHunter    ( int               databaseSize,
+                           TTERRORIST      * database,
+                           int               processes,
+                           TIMAGE        *(* scanner) ( void ),
+                           void           (* officer) ( TIMAGE *, int ) );
+#endif /* __PROGTEST__ */
+</pre>
+Význam deklarací je následující:
+<ul>
+ <li>Struktura <tt>TIMAGE</tt> reprezentuje jeden obrázek z kamery. Složka
+   <tt>m_W</tt> udává šířku a <tt>m_H</tt> výšku obrázku. Vlastní
+   obrazová data jsou předaná v podobě 2D pole <tt>m_Data</tt>. Toto
+   pole je staticky alokované, obsahuje <tt>m_H</tt> řádek a <tt>m_W</tt> 
+   sloupců platných dat (zbytek je nedefinovaný, výška i šířka 
+   obrázku jsou menší rovny maximální velikosti). V každém prvku pole je uložena "barva" 
+   - odstín šedé od 0 do 254. Hodnota 255 má zvláštní význam, viz níže.</li>
+
+ <li>Struktura <tt>TTERRORIST</tt> reprezentuje jeden obrázek teroristy. 
+   Sturktura a význam složek je stejný jako v případě <tt>TIMAGE</tt>.</li>
+
+ <li>Funkce <tt>TerroristHunter</tt> je rozhraní pro Vaší implementaci.
+  Tato funkce zajišťuje celý proces získávání/zpracování/odevzdávání   
+  obrazů. Má následující parametry:
+  <ul>
+   <li><tt>databaseSize</tt> udává počet hledaných teroristů v databázi.
+     Celkový počet je vždy maximálně 32.</li>
+   <li><tt>database</tt> je pole obrázů hledaných teroristů.
+     Pole má vyplněno prvních <tt>databaseSize</tt> položek.</li>
+   <li><tt>processes</tt> je  počet pracovních procesů, které má Vaše
+     implementace vytvořit. Mezi tyto procesy se bude rozkládat výpočetní zátěž.</li>
+   <li><tt>scanner</tt> je ukazatel na funkci generující snímek. Vaše 
+     implementace bude tuto funkci volat vždy, když bude potřebovat další
+     snímek ke zpracování. Funkce vrátí ukazatel na načtený snímek nebo  
+     hodnotu <tt>NULL</tt>, pokud již další snímky nejsou k dispozici    
+     (konec směny).</li>
+   <li><tt>officer</tt> je ukazatel na funkci, které budete odevzdávat
+     zpracované a vyhodnocené snímky. Parametrem funkce je zpracovaný 
+     snímek (ukazatel na něj) a pole příznaků, kteří teroristé byli na snímku
+     detekování. Druhý parametr (hodnotu <tt>int</tt>) chápejte jako bitové pole, kde každému
+     bitu odpovídá jeden terorista z databáze (bit 0 bude mít hodnotu 1 pokud 
+     obrázek obsahoval teroristu z <tt>database[0]</tt>, bit 1 bude mít hodnotu 1 pokud
+     obrázek obsahoval teroristu z <tt>database[1]</tt>, ...). Každý zpracovávaný obrázek 
+     předávejte touto funkcí pouze jednou, v okamžiku kdy již vyhodnotíte přítomnost/nepřítomnost 
+     všech hledaných teroristů z databáze.</li>
+  </ul></li>
+</ul>
+
+<p>Vaše implementace bude mít následující hrubou strukturu:</p>
+<ul>
+ <li>Inicializuje Vaše struktury (fronty), do kterých budete ukládat zpracovávané
+   požadavky.</li>
+ <li>Vytvoří <tt>processes</tt> synovských procesů, každý z těchto procesů bude podle 
+   potřeby vyhledávat teroristy z databáze ve zpracovávaných obrazech.</li>
+ <li>Rodičovský proces bude v cyklu volat <tt>scanner</tt> a bude rozdělovat práci 
+   mezi ostatní procesy.</li>
+ <li>Synovské procesy zpracovávají příchozí požadavky, po vyhodnocení vracejí výsledky hledání 
+  (i výsledky negativní) rozhraním <tt>officer</tt>.</li>
+ <li>Po zpracování všech požadavků (scanner začne vracet NULL) ukončíte vytvořené procesy, 
+  uvolníte Vámi alokované prostředky a vrátíte se z volání <tt>TerroristHunter</tt>. Pozor - 
+  funkce <tt>TerroristHunter</tt> se musí vrátit právě jednou, v rodičovském procesu. Synovské 
+  procesy musí zaniknout (např. funkcí <tt>exit()</tt>), tedy z funkce <tt>TerroristHunter</tt> 
+  se nikdy nevrátí.</li>
+</ul>
+
+<p>Jak vyhledávat teroristy: na rozdíl od reálné situace uvažujeme řadu zjednodušení. Obrázky
+vyhledáváme na přesnou shodu (neuvažujeme zmenšení, zvětšení, natočení, intenzitu osvětlení  
+ani změnu vzhledu hledaných osob). Úloha je tedy variantou vyhledávání matice v matici.      
+Aby byla výpočetně náročnější (a aby více vyniklo paralení zpracování), předpokládáme, že
+obrázek teroristy v databázi má vymaskované pozadí. Hodnoty barvy 0-254 v obrázku teroristy se musí 
+přesně shodovat s hodnotou barvy v obrazu. Pokud má nějaký prvek v obrazu teroristy hodnotu 255, 
+jedná se o pozadí, které neuvažujeme (tedy na prohledávaném obrazu v tomto místě může být cokoliv). 
+Příklad je v přiloženém zdrojovém kódu. První obrázek (<tt>i0</tt>) obsahuje teroristy <tt>t0</tt> a 
+<tt>t1</tt>. Druhý obrázek (<tt>i1</tt>) obsahuje teroristu <tt>t1</tt> a třetí obrázek neobsahuje žádného.</p>
+
+<p>Odevzdávejte zdrojový kód s implementací požadované funkce <tt>TerroristHunter</tt> a s případnými dalšími 
+podpůrnými funkcemi, které Vaše implementace potřebuje. Deklarace struktur <tt>TIMAGE</tt> a <tt>TTERRORIST</tt> 
+a definice symbolických konstant jejich velikosti ponechte v bloku podmíněného překladu. Za základ implementace 
+můžete použít přiložený příklad použití (vzorová data). Do Vaší implementace nevkládejte funkci <tt>main</tt> 
+ani direktivy pro vkládání hlavičkových souborů. Funkci <tt>main</tt> a hlavičkové soubory lze ponechat pouze 
+v případě, že jsou zabalené v bloku podmíněného překladu (viz přiložená vzorová data). Při implementaci 
+nepoužívejte STL.</p>
+
+
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+ <li>Pokud je ze scanneru čteno celkem <tt>n</tt> obrázků a máme vyhledávat <tt>m</tt> teroristů,
+   pak je potřeba pro celkem <tt>m x n</tt> vyhledat teroristu v obrázku. Každé vyhledání může trvat 
+   různě douho (v závislosti na velikosti obrázků). Proto je vhodné přidělovat výpočetní problémy jemně. 
+   Umožněte výpočet každého z <tt>m x n</tt> vyhledání procesem, který je právě volný. Zkuste problém 
+   převést na nějakou modelovou synchronizační úlohu.</li>
+
+ <li>Pokud je obrázek teroristy větší než obrázek z kamery, pak prohledání nemusíte provádět - terorista 
+   tam není (ale testovací prostředí takové vstupy nezadává).</li>
+
+ <li>Funkce <tt>TerroristHunter</tt> je volaná opakovaně, pro různé vstupy. Nespoléhejte se na inicializaci
+   globálních proměnných - při druhém a dalším zavolání budou mít globální proměné hodnotu jinou. Je rozumné
+   případné globální proměnné inicializovat na začátku funkce <tt>TerroristHunter</tt>.</li>
+
+ <li>Testovací prostředí samo o sobě nevytváří žádné další procesy a vlákna, tedy funkce <tt>TerroristHunter</tt> 
+  sama o sobě nemusí být reentrantní (může používat globální proměnné).</li>
+
+ <li>Obrázky v databázi alokovalo testovací prostředí. Testovací  prostředí se také postará o jejich uvolnění 
+   po dokončení práce <tt>TerroristHunter</tt>. <b>Pozor</b> - toto neplatí o obrázkách z kamery. Obrázky z kamery 
+   (poté, co jej převezmete od volání <tt>scanner</tt>) je ve Vaší správě, uvolněte jej sami až jej nebudete 
+   potřebovat. K uvonění použijte volání <tt>free()</tt>. Dále samozřejmě musíte ovšem uvolňovat ty prostředky, 
+   které si alokujete Vy sami.</li>
+
+ <li>Vlastní vyhledávání obrázku v obrázku lze naprogramovat pomocí funkce (či lépe 2 funkcí), 
+   které mají dohromady cca 20 řádek kódu (včetně hlaviček a deklarací proměnných).</li>
+
+ <li>Pokud má obrázek teroristy velikost <tt>Wt x Ht</tt> a obrázek z kamery <tt>Wk x Hk</tt>, pak
+     obrázek teroristy musíte přiložit a porovnat celkově na <tt>(Wk - Wt + 1) x (Hk - Ht + 1)</tt>
+     místech. Neuvažujte situaci, že by část obrázku teroristy obsahující pouze pozadí byla mimo obrázek 
+     kamery.</li>
+ <li>Obrázky musíte načtat, zpracovávat a odevzdávat průběžně. Postup, kdy si všechny obrázky načtete do 
+     paměťových struktur a pak je začnete zpracovávat, nebude fungovat.</li>
+ <li>Volání <tt>officer</tt> je reentrantní, není potřeba je serializovat (obalovat mutexy). Naopak, 
+     vyhodnocené fotografie odevzdávejte přímo z výpočetních procesů, paralelně.</li>
+ <li>Za zálad řešení samozřejmě použijte odladěnou úlohu s vlákny. Rozdíl je v deklaraci struktur obrázků 
+     (shora omezená velikost usnadní implementaci meziprocesové komunikace) a v oddělení obrázku z kamery 
+     a teroristy (terorista je výrazně menší).</li>
+ <li>POSIX mutexy a POSIX podmíněné proměnné nejsou použitelné. Nelze volat vytváření vláken. Úlohu musíte 
+     řešit prostředky, které jsou nabízené pro procesy (<tt>fork</tt>, <tt>wait</tt>, ...).</li>
+ <li>K synchronizaci můžete používat System V IPC prostředky (sdílená paměť, pole semaforů, fronty zpráv),
+     dále sdílenou paměť vytvořenou <tt>mmap</tt> a POSIX semafory (<tt>sem_init</tt>, ...). Při používání 
+     POSIX semaforů dejte pozor na jejich inicializaci (sdílené) a umístění (sdílená paměť).</li>
+ <li>Největším problémem je sdílení dat mezi procesy. Využijte sdílenou paměť. Do této paměti budete muste 
+     umístit řídící proměnné, synchronizační prostředky (semafory) i testované obrázky. Sdílená paměť je 
+     poměrně omezený prostředek, celková velikost její alokace je omezena OS. V testovacím prostředí máte 
+     k dispozici max. 4MB sdílené paměti, do které se Vaše data musí vejít.</li>
+ <li>Sdílená paměť se alokuje po stránkách (4KB). I když chcete pouze 1B, systém pro Vás musí alokovat celou 
+     stránku. Proto je lepší sdílená data shlukovat do struktur a alokovat celé struktury. Ideálně budete 
+     alokovat pouze jeden blok sdílené paměti.</li>
+ <li>Umisťovat objekty do sdílené paměti je odvážný krok, který pro zdárné zvládnutí vyžaduje znalosti vnitřní 
+     implementace objektů. Je potřeba zvážit zejména následující:
+     <ul>
+       <li>Objekty nesmí mít virtuální metody. Pokud virtuální metody mají, musí být zajištěna stejná adresa 
+        VMT a metod v jednotlivých procesech. To platí i pro šablony a vícenásobné dědění. Zajištění stejného 
+        paměťového obrazu je realistické pouze pro ten samý spustitelný soubor.</li>
+       <li>Ve sdílené paměti musíte objekt alokovat pomocí vlastního přetíženého operátoru <tt>new</tt>.
+       </li><li>Operátor <tt>delete</tt> musí být také přetížený. Bývá rozumné jej přetěžovat ve třídě, jejíž 
+        instanci chcete umístit do sdílené paměti.</li>
+     </ul></li>
+
+ <li>Nezapomeňte IPC prostředky na konci výpočtu uvolňovat. Pokud to neuděláte, sdílené prostředky snadno 
+     vyčerpáte a další tesování bude neúspěšné.</li>
+
+ <li>Jak je to s pamětí alokovanou pro obrázky? Obrázky teroristů jsou alokované v testovacím prostředí
+    a jsou uvolněné testovacím prostředím po doběhnutí <tt>TerroristHunter</tt>. Obrázky nejsou ve sdílené 
+    paměti, ale voláním <tt>fork()</tt> se zkopírují do synovských procesů. Protože je neměníte, <b>není</b> 
+    potřeba je nikam kopírovat (např. do sdílené paměti).</li>
+
+ <li>Obrázky z kamerového subsystému jsou alokovány v procesu volajícího. Nejsou alokované ve sdílené paměti. 
+    Pokud je potřebuejte někam předat, budete je muset zkopírovat do nějaké své sdílené paměti. Až nebude
+    potřeba, <b>uvolněte</b> obrázek předaný funkcí <tt>scanner()</tt> voláním <tt>free()</tt>. Typicky to 
+    bude po zkopírování do sdílené paměti.</li>
+
+ <li>Obrázky předávané funkci <tt>officer()</tt> budou kopie, které si vytvoří Vaše implementace. Není 
+    podstatné, zda jsou alokované ve sdílené paměti nebo ne. Naopak, je důležité, aby byla správně 
+    zachovaná velikost i obsah obrázku. Testovací prostředí ve funkci <tt>officer()</tt> předaný obrázek 
+    pouze čte. Nesnaží se jej nijak uvolnit. Případné uvolnění paměti musíte případně provést sami po 
+    návratu z volání <tt>officer()</tt>.</li>
+
+ <li>Nedoporučujeme používat pro implementaci IPC signály (např. async IO).
+</li></ul>
+
+<hr>
+<b>Co znamenají jednotlivé testy:</b><br>
+<dl>
+ <dt><b>Test zrychleni vypoctu</b></dt><dd>Testovací prostředí spouští Vaši
+funkci pro ta samá vstupní data s různým počtem procesů. Měří se čas běhu
+(wall i CPU). S rostoucím počtem procesů by měl wall time klesat, CPU time 
+mírně růst (procesy mají možnost běžet na dalších CPU). Pokud wall time
+neklesne, nebo klesne málo (např. pro 2 procesy by měl ideálně klesnout na 
+0.5, existuje určitá rezerva), test není splněn.</dd>
+
+ <dt><b>Test rozložení zátěže</b></dt><dd>Testovací prostředí předloží 
+Vašemu programu relativně hodně fotografií teroristů (např. 20) a pouze
+jeden  velký obrázek z kamery. Výpočetní výkon by se měl rozložit mezi
+procesy (např. pro 4 procesy by měl wall time být 1/4 sekvenčního času). Pokud 
+přiřazujete výpočty tak, že fotografie z kamery = 1 proces, testem neprojdete
+(ztráta 50% bodů).</dd>
+
+ <dt><b>Busy waiting - vypocetni procesy</b></dt><dd>Do volání
+<tt>scanner</tt> testovací prostředí vkládá uspávání (např. na 100
+ms). Výpočetní procesy tím nemají práci. Pokud výpočetní procesy nejsou 
+synchronizované blokujícím způsobem, výrazně vzroste CPU time.</dd>
+
+ <dt><b>Busy waiting - scanner proces</b></dt><dd>Do volání <tt>officer</tt>
+je vložena pauza. Pokud je špatně blokován proces scanneru, výrazně vzroste
+CPU time. (Tento scénář je zde méně pravděpodobný.)</dd>
+
+ <dt><b>Busy waiting - complex</b></dt><dd>Je kombinací dvou posledně
+jmenovaných testů.</dd>
+</dl>
+
+</body>
+</html>

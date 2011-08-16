@@ -1,0 +1,171 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+
+<h1>Mnohoúhelník</h1>
+
+<p>Úkolem je realizovat program, který pro zadaný bod ve 2D rovině rozhodne, 
+zda leží v zadaném konvexním mnohoúhelníku.</p>
+
+<p>Vstupem program je zadání testovaného bodu (je zadán v podobě souřadnic 
+x a y) a následuje zadání vrcholů mnohoúhelníku. Vrchol mnohoúhelníku 
+je zadán opě dvojicí čísel -- souřadnicí x a y. Všechny souřadnice jsou 
+zadávané jako celá čísla. Zadávání vrcholů mnohoúhelníku je ukončené
+signalizovaným koncem souboru (na klávesnici stisk Ctrl-D v UNIXu, 
+Ctrl-Z ve Windows).</p>
+
+<p>Výstupem program je rozhodnutí, zda zadané body vůbec tvoří konvexní 
+mnohoúhelník a pokud ano, zda zadaný bod leží uvnitř tohoto mnohoúhelníku.
+Přesný formát odpovědi je zřejmý z ukázek níže. Za každou řádkou výpisu 
+programu je odřádkování (\n), odřádkování je i za poslední řádkou výpisu.</p>
+
+<p>Program musí správně reagovat na zadání nesprávných vstupních dat. Pokud 
+jsou na vstupu detekovaná nesprávná data, program zobrazí chybové hlášení 
+(formát viz níže) a ukončí se. Za případným chybovým hlášením je odřádkování.
+Za chybu se považuje:</p>
+
+<ul>
+ <li>neceločíselný údaj na vstupu nebo</li>
+ <li>zadání méně než 3 vrcholů mnohoúhelníku.</li>
+</ul>
+
+<p>Program reaguje na chybný vstup okamžitě. Tedy, pokud byla nesprávně zadaná 
+hned první souřadnice (testovaný bod), program se nebude dotazovat na zadání
+mnohoúhelníku.</p>
+
+<p>Program je spouštěn v omezeném prostředí, kde je omezena doba běhu a 
+celková dostupná paměť. Doba běhu programu je omezena na 2sec pro řádově 
+stotisíce vrcholů. Neukládejte načítané souřadnice vrcholů do pole. V této 
+úloze to není potřeba. Plně postačuje pamatovat si celkem 4-5 souřadnic. Pokud 
+si budete souřadnice ukládat, neuspěje Vaše řešení v posledním testu.</p>
+
+<b>Ukázka práce programu:</b><br>
+<hr>
+<pre>Zadejte souradnice bodu:
+4 1
+Zadejte body n-uhelniku:
+0 0
+10 0
+5 10
+Bod lezi uvnitr n-uhelniku.
+</pre>
+<hr>
+<pre> 
+Zadejte souradnice bodu:
+6 1
+Zadejte body n-uhelniku:
+0 0
+5 10
+10 0
+Bod lezi uvnitr n-uhelniku.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+4 -2
+Zadejte body n-uhelniku:
+0 0
+10 0
+8 10
+2 10
+Bod nelezi uvnitr n-uhelniku.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+0 5
+Zadejte body n-uhelniku:
+0 0
+10 0
+0 10
+Bod nelezi uvnitr n-uhelniku.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+-2 5
+Zadejte body n-uhelniku:
+0 0
+10 0
+0 10
+Bod nelezi uvnitr n-uhelniku.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+2 5
+Zadejte body n-uhelniku:
+0 0
+5 0
+10 0
+Zadany n-uhelnik neni konvexni.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+2 5
+Zadejte body n-uhelniku:
+0 0
+5 1
+10 0
+0 10
+Zadany n-uhelnik neni konvexni.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+10 10
+Zadejte body n-uhelniku:
+0 4
+4 0
+Nespravny vstup.
+</pre>
+<hr>
+<pre>Zadejte souradnice bodu:
+10 10
+Zadejte body n-uhelniku:
+0 4
+10 4
+0 asdf
+Nespravny vstup.
+</pre>
+<hr>
+<b>Nápověda:</b><br>
+<ul>
+ <li>Mnohoúhelník je konvexní, pokud jsou všechny vnitřní úhly menší 
+     než 180 stupňů (z hlediska matematického to není ani podmínka nutná 
+     ani podmínka postačující, ale pro vyřešení této úlohy je to předpokládané 
+     zjednodušení).</li> 
+ <li>Bod je uvnitř konvexního mnohoúhelníku, pokud je od všech jeho hran
+     "na stejné straně".</li>
+ <li>Není šikovné využívat goniometrické funkce. Lepší je použít 
+     vektorový součin.</li>
+ <li>Hodnoty souřadnic na vstupu jsou v řádu stovek miliónů. Pro vlastní
+     uložení souřadnic tedy postačuje datový typ <tt>int</tt>.</li>
+ <li>Počet vrcholů mnohoúhelníku není explicitně omezen. Správně napsaný 
+     program musí být schopen vyřešit úlohu s neomezeným počtem.</li>
+ <li>Program musí správně pracovat se vstupem a musí být schopen správně 
+     rozeznat konec souboru (konec vstupu). O konci souboru se traduje 
+     mnoho polopravd a mýtů. Neexistuje žádný bajt znamenající konec souboru.
+     Stisk Ctrl-D (Ctrl-Z) prostě pouze informuje OS, že vstup nepokračuje, 
+     uzavírá se. Stiskem těchto kláves se do vstupu nepřidává žádný bajt. 
+     Je povinností aplikace testovat, zda je vstup uzavřený (a zda z něj lze
+     něco číst). Typický postup je zachycen v následujícím pseudokódu:
+<pre> opakuj_do_nekonecna
+  {
+    zkus_precist_vstup
+    if ( chyba_pri_cteni ) ukonci_smycku;
+    zpracuj_nacteny_vstup
+  }
+ /* Existují dva důvody, proč program opustil smyčku:
+  * - došlo k chybě čtení, důvodem byla HW závada, nesprávný formát dat, ...
+  * - vstup neobsahuje žádná další data, protože jsme na konci
+  *
+  * tyto dvě varianty musíme odlišit:
+  */
+ if ( feof ( stdin ) ) 
+   /* ok, jsme na konci souboru */
+  else
+   /* nejsme na konci souboru - nastala chyba čtení (HW, formát dat, ...) */
+</pre></li>
+ 
+</ul>
+
+</body>
+</html>
